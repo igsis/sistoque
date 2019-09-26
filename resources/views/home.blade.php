@@ -1,11 +1,7 @@
-@extends('adminlte::page')
+@extends('layouts.master')
 
-@section('title', 'AdminLTE')
+@section('titulo','Início')
 
-@section('content_header')
-    <h1>Dashboard</h1>
-@stop
-
-@section('content')
-    <p>You are logged in!</p>
-@stop
+@section('conteudo')
+    <p>{{ Auth::user()->email }}</p>
+@endsection
