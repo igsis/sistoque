@@ -25,4 +25,9 @@ class UserController extends Controller
     {
         return view('home');
     }
+
+    public function edit()
+    {
+        return view('minha_conta');
+    }
 }

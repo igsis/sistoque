@@ -29,7 +29,7 @@
         </div>
         <div class="form-group has-feedback">
             <select class="form-control" name="unidade" id="unidade">
-                <option value="" selected>Selecione uma unidade</option>
+                <option value="1" selected>Selecione uma unidade</option>
 
             </select>
         </div>
