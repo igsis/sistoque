@@ -1,11 +1,11 @@
 <?php
 
-namespace ccult\Http\Controllers;
+namespace sitoque\Http\Controllers;
 
 use Illuminate\Http\Request;
-use ccult\Models\PfEndereco;
-use ccult\Models\PfTelefone;
-use ccult\Models\PessoaFisica;
+use sitoque\Models\PfEndereco;
+use sitoque\Models\PfTelefone;
+use sitoque\Models\PessoaFisica;
 
 class PessoaFisicaController extends Controller
 {

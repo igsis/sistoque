@@ -21,27 +21,58 @@
 
             <!-- Default box -->
             <div class="box box-primary">
-                <form action="">
+                <form action="{{route('produto.gravar')}}" method="POST">
                     <div class="box-body">
                         <div class="row">
                             <div class="form-group col-md-12 has-feedback">
                                 <label for="name">Descrição do produto</label>
                                 <input class="form-control" type="text" name="descricao" id="descricao" value="{{old('descricao')}}">
                             </div>
-                            <div class="form-group col-md-6 has-feedback">
+                            <div id="divCategoria"class="form-group col-xs-7 col-md-5 has-feedback">
                                 <label for="categoria">Categoria</label>
                                 <select class="form-control" name="categoria"
                                         id="categoria">
                                     <option value="" selected>Selecione uma Opção</option>
+                                    @foreach ($categorias as $categoria)
+                                        @if ($categoria->id == old('categoria'))
+                                            <option value="{{$categoria->id}}" onchange="subFunction()" selected>{{$categoria->nome}}</option>
+                                        @else
+                                            <option value="{{$categoria->id}}" onchange="subFunction()" >{{$categoria->nome}}</option>
+                                        @endif
+                                    @endforeach
+
+                                </select>
+                            </div>
+                            <div class="form-group col-xs-2 col-md-1">
+                                <label for="addCategoria">&emsp;</label>
+                                <button type="button" class="btn btn-info btn-block" data-toggle="modal"
+                                        data-target="#addCategoria">
+                                    <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"/>
+                                </button>
+                            </div>
+
+                            <div id="divSubCategoria"class="form-group col-xs-7 col-md-5 has-feedback">
+                                <label for="name">Subcategoria</label>
+                                <select class="form-control" name="subcategoria" id="subcategoria">
+                                    <option value="" selected>Selecione uma Opção</option>
+                                    @foreach ($subcategorias as $subcategoria)
+                                        @if ($subcategoria->id == old('subcategoria'))
+                                            <option value="{{$subcategoria->id}}" selected>{{$subcategoria->sub_categoria}}</option>
+                                        @else
+                                            <option value="{{$subcategoria->id}}" >{{$subcategoria->sub_categoria}}</option>
+                                        @endif
+                                    @endforeach
                                 </select>
                             </div>
 
-                            <div class="form-group col-md-6 has-feedback">
-                                <label for="name">Subcategoria</label>
-                                <select class="form-control" name="subcategoria" id="subcategotia">
-                                    <option value="" selected>Selecione uma Opção</option>
-                                </select>
+                            <div class="form-group col-xs-2 col-md-1">
+                                <label for="addSubCategoria">&emsp;</label>
+                                <button type="button" class="btn btn-info btn-block" data-toggle="modal"
+                                        data-target="#addCategoria">
+                                    <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"/>
+                                </button>
                             </div>
+
                             <div class="form-group col-md-4 has-feedback">
                                 <label for="name">Quantidade</label>
                                 <input class="form-control" type="number" name="quantidade" id="quantidade" value="{{old('quantidade')}}">
@@ -50,6 +81,13 @@
                                 <label for="name">Tipo Quantidade</label>
                                 <select class="form-control" name="tipoQuantidade" id="tipoQuantidade">
                                     <option value="" selected>Selecione uma Opção</option>
+                                    @foreach ($tipoQuantidades as $tipoQuantidade)
+                                        @if ($tipoQuantidade->id == old('tipoQuantidade'))
+                                            <option value="{{$tipoQuantidade->id}}" selected>{{$tipoQuantidade->tipo}}</option>
+                                        @else
+                                            <option value="{{$tipoQuantidade->id}}" >{{$tipoQuantidade->tipo}}</option>
+                                        @endif
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="form-group col-md-4 has-feedback">
@@ -64,6 +102,16 @@
                     </div>
                 </form>
             </div>
+
+            @include('layouts.modal', ['idModal' => 'addCategoria', 'titulo' => 'Adicionar Categoria', 'actionForm' => 'createCategoria', 'nameModal' => 'nome', 'equipamentoId' => '0', 'idInput' => 'novaSubAdm', 'funcaoJS' => 'insertSubAdm'])
         </section>
     </div>
+
+    <script>
+        function subFunction() {
+            var x = document.getElementById("mySelect").value;
+            document.getElementById("demo").innerHTML = "You selected: " + x;
+        }
+    </script>
+
 @endsection

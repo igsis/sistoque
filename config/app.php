@@ -155,14 +155,14 @@ return [
         /*
          * Application Service Providers...
          */
-        ccult\Providers\AppServiceProvider::class,
-        ccult\Providers\AuthServiceProvider::class,
-        ccult\Providers\MenuPessoaFisicaProvider::class,
-        ccult\Providers\MenuPessoaJuridicaProvider::class,
-        ccult\Providers\MenuUserAdminProvider::class,
-        // ccult\Providers\BroadcastServiceProvider::class,
-        ccult\Providers\EventServiceProvider::class,
-        ccult\Providers\RouteServiceProvider::class,
+        sitoque\Providers\AppServiceProvider::class,
+        sitoque\Providers\AuthServiceProvider::class,
+        sitoque\Providers\MenuPessoaFisicaProvider::class,
+        sitoque\Providers\MenuPessoaJuridicaProvider::class,
+        sitoque\Providers\MenuUserAdminProvider::class,
+        // sitoque\Providers\BroadcastServiceProvider::class,
+        sitoque\Providers\EventServiceProvider::class,
+        sitoque\Providers\RouteServiceProvider::class,
 
     ],
 

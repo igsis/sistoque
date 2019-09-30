@@ -1,6 +1,6 @@
 <?php
 
-namespace ccult\Http;
+namespace sitoque\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
@@ -14,11 +14,11 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
-        \ccult\Http\Middleware\CheckForMaintenanceMode::class,
+        \sitoque\Http\Middleware\CheckForMaintenanceMode::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
-        \ccult\Http\Middleware\TrimStrings::class,
+        \sitoque\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
-        \ccult\Http\Middleware\TrustProxies::class,
+        \sitoque\Http\Middleware\TrustProxies::class,
     ];
 
     /**
@@ -28,12 +28,12 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
-            \ccult\Http\Middleware\EncryptCookies::class,
+            \sitoque\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             // \Illuminate\Session\Middleware\AuthenticateSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            \ccult\Http\Middleware\VerifyCsrfToken::class,
+            \sitoque\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
 
@@ -56,12 +56,12 @@ class Kernel extends HttpKernel
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
-        'guest' => \ccult\Http\Middleware\RedirectIfAuthenticated::class,
+        'guest' => \sitoque\Http\Middleware\RedirectIfAuthenticated::class,
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        'pessoaFisica' => \ccult\Http\Middleware\pessoaFisicaMiddleware::class,
-        'pessoaJuridica' => \ccult\Http\Middleware\pessoaJuridicaMiddleware::class,
-        'PendenciasPF' =>  \ccult\Http\Middleware\PendenciasPF::class,
-        'PendenciasPJ' =>  \ccult\Http\Middleware\PendenciasPJ::class,
+        'pessoaFisica' => \sitoque\Http\Middleware\pessoaFisicaMiddleware::class,
+        'pessoaJuridica' => \sitoque\Http\Middleware\pessoaJuridicaMiddleware::class,
+        'PendenciasPF' =>  \sitoque\Http\Middleware\PendenciasPF::class,
+        'PendenciasPJ' =>  \sitoque\Http\Middleware\PendenciasPJ::class,
     ];
 }

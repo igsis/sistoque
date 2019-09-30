@@ -1,6 +1,6 @@
 <?php
 
-namespace ccult\Http\Middleware;
+namespace sitoque\Http\Middleware;
 
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
 

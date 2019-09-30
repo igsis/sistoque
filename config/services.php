@@ -30,7 +30,7 @@ return [
     ],
 
     'stripe' => [
-        'model' => ccult\User::class,
+        'model' => sitoque\User::class,
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
     ],

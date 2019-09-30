@@ -1,7 +1,7 @@
 <?php
 
 Route::get('/', function () {
-    return view('home');
+    return view('auth.login');
 });
 
 Auth::routes();
@@ -9,7 +9,12 @@ Auth::routes();
 Route::get('/home', 'UserController@index')->name('home');
 
 Route::group(['prefix' => 'produto'], function(){
-    Route::get('/cadastro', 'ProdutoController@create')->name('produto.cadastro');
+
+    Route::get('/cadastrar', 'ProdutoController@create')->name('produto.cadastro');
+
+    Route::post('/categoria', 'CategoriaController@create')->name('createCategoria');
+
+    Route::post('/gravarProduto', 'ProdutoController@store')->name('produto.gravar');
 });
 
 Route::get('/pedido', 'PedidoController@create')->name('pedido');

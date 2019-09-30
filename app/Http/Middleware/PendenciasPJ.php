@@ -1,6 +1,6 @@
 <?php
 
-namespace ccult\Http\Middleware;
+namespace sitoque\Http\Middleware;
 
 use Closure;
 

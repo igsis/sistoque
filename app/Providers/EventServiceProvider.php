@@ -1,6 +1,6 @@
 <?php
 
-namespace ccult\Providers;
+namespace sitoque\Providers;
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -13,8 +13,8 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'ccult\Events\Event' => [
-            'ccult\Listeners\EventListener',
+        'sitoque\Events\Event' => [
+            'sitoque\Listeners\EventListener',
         ],
     ];
 

@@ -1,10 +1,10 @@
 <?php
 
-namespace ccult\Http\Controllers\PessoaFisicaAuth;
+namespace sitoque\Http\Controllers\PessoaFisicaAuth;
 
-use ccult\Http\Controllers\Controller;
+use sitoque\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use ccult\Models\PessoaFisica;
+use sitoque\Models\PessoaFisica;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 

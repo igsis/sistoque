@@ -1,6 +1,6 @@
 <?php
 
-namespace ccult\Http\Controllers;
+namespace sitoque\Http\Controllers;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;

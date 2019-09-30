@@ -1,10 +1,10 @@
 <?php
 
-namespace ccult\Http\Controllers\PessoaJuridicaAuth;
+namespace sitoque\Http\Controllers\PessoaJuridicaAuth;
 
-use ccult\Http\Controllers\Controller;
+use sitoque\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use ccult\Models\PessoaJuridica;
+use sitoque\Models\PessoaJuridica;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 

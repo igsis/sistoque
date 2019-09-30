@@ -1,6 +1,6 @@
 <?php
 
-namespace ccult\Models;
+namespace sitoque\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

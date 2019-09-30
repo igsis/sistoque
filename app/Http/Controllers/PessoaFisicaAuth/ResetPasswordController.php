@@ -1,8 +1,8 @@
 <?php
 
-namespace ccult\Http\Controllers\PessoaFisicaAuth;
+namespace sitoque\Http\Controllers\PessoaFisicaAuth;
 
-use ccult\Http\Controllers\Controller;
+use sitoque\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 
 class ResetPasswordController extends Controller

@@ -1,6 +1,6 @@
 <?php
 
-namespace ccult\Providers;
+namespace sitoque\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
@@ -8,7 +8,7 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 class RouteServiceProvider extends ServiceProvider
 {
 
-    protected $namespace = 'ccult\Http\Controllers';
+    protected $namespace = 'sitoque\Http\Controllers';
 
     public function boot()
     {

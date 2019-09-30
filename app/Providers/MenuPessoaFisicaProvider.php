@@ -1,6 +1,6 @@
 <?php
 
-namespace ccult\Providers;
+namespace sitoque\Providers;
 
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -10,7 +10,7 @@ use JeroenNoten\LaravelAdminLte\Events\BuildingMenu;
 class MenuPessoaFisicaProvider extends ServiceProvider
 {
     protected $policies = [
-        'ccult\Model' => 'ccult\Policies\ModelPolicy',
+        'sitoque\Model' => 'sitoque\Policies\ModelPolicy',
     ];
 
     public function boot(Dispatcher $events)

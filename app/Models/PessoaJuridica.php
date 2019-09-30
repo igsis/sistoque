@@ -1,6 +1,6 @@
 <?php
 
-namespace ccult\Models;
+namespace sitoque\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;

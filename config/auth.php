@@ -15,7 +15,7 @@ return [
 
     'defaults' => [
         'guard' => 'web',
-        'passwords' => 'users', 
+        'passwords' => 'users',
     ],
 
     /*
@@ -87,7 +87,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => ccult\Models\User::class,
+            'model' => sitoque\Models\User::class,
         ],
 
         //providers

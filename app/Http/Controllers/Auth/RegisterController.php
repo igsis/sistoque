@@ -1,9 +1,9 @@
 <?php
 
-namespace ccult\Http\Controllers\Auth;
+namespace sitoque\Http\Controllers\Auth;
 
-use ccult\Models\User;
-use ccult\Http\Controllers\Controller;
+use sitoque\Models\User;
+use sitoque\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;

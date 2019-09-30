@@ -1,8 +1,8 @@
 <?php
 
-namespace ccult\Http\Controllers\Auth;
+namespace sitoque\Http\Controllers\Auth;
 
-use ccult\Http\Controllers\Controller;
+use sitoque\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 
 class ForgotPasswordController extends Controller

@@ -1,9 +1,9 @@
 <?php
 
-namespace ccult\Http\Controllers\PessoaJuridicaAuth;
+namespace sitoque\Http\Controllers\PessoaJuridicaAuth;
 
-use ccult\Models\PessoaJuridica;
-use ccult\Http\Controllers\Controller;
+use sitoque\Models\PessoaJuridica;
+use sitoque\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;

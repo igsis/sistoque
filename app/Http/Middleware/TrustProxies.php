@@ -1,6 +1,6 @@
 <?php
 
-namespace ccult\Http\Middleware;
+namespace sitoque\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Fideloper\Proxy\TrustProxies as Middleware;

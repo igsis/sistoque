@@ -1,11 +1,11 @@
 <?php
 
-namespace ccult\Http\Controllers;
+namespace sitoque\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use ccult\Models\PessoaJuridica;
-use ccult\Models\ListaDocumentos;
+use sitoque\Models\PessoaJuridica;
+use sitoque\Models\ListaDocumentos;
 
 class UploadPjController extends Controller
 {

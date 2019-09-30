@@ -1,12 +1,12 @@
 <?php
 
-namespace ccult\Http\Controllers;
+namespace sitoque\Http\Controllers;
 
 use Illuminate\Http\Request;
-use ccult\Models\PjEndereco;
-use ccult\Models\PjTelefone;
-use ccult\Models\PessoaJuridica;
-use ccult\Models\RepresentanteLegal;
+use sitoque\Models\PjEndereco;
+use sitoque\Models\PjTelefone;
+use sitoque\Models\PessoaJuridica;
+use sitoque\Models\RepresentanteLegal;
 
 class PessoaJuridicaController extends Controller
 {

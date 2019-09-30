@@ -1,9 +1,9 @@
 <?php
 
-namespace ccult\Http\Controllers\PessoaFisicaAuth;
+namespace sitoque\Http\Controllers\PessoaFisicaAuth;
 
-use ccult\Models\PessoaFisica;
-use ccult\Http\Controllers\Controller;
+use sitoque\Models\PessoaFisica;
+use sitoque\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
