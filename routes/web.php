@@ -1,5 +1,10 @@
 <?php
 
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Response;
+use sitoque\Models\Subcategoria;
+use function foo\func;
+
 Route::get('/', function () {
     return view('auth.login');
 });
@@ -8,16 +13,33 @@ Auth::routes();
 
 Route::get('/home', 'UserController@index')->name('home');
 
-Route::group(['prefix' => 'produto'], function(){
+Route::group(['prefix' => 'Produto'], function(){
 
-    Route::get('/cadastrar', 'ProdutoController@create')->name('produto.cadastro');
+    Route::get('/Cadastrar', 'ProdutoController@create')->name('produto.cadastro');
 
-    Route::post('/categoria', 'CategoriaController@create')->name('createCategoria');
+    Route::get('/Categoria', 'CategoriaController@create')->name('createCategoria');
 
-    Route::post('/gravarProduto', 'ProdutoController@store')->name('produto.gravar');
+    Route::post('/GravarProduto', 'ProdutoController@store')->name('produto.gravar');
+
+    Route::get('/Listar', 'ProdutoController@index')->name('produto.listar');
+
 });
 
-Route::get('/pedido', 'PedidoController@create')->name('pedido');
+    Route::get('/ajax-subcat',function (){
+
+       $cat_id = Input::get('cat_id');
+
+       $subcategorias = Subcategoria::where('categoria_produtos_id', $cat_id)->get();
+
+       return Response::json($subcategorias);
+    });
+
+Route::group(['prefix' => 'Pedido'], function(){
+
+    Route::get('/Solicitar', 'PedidoController@create')->name('pedido.solicitar');
+
+    Route::get('/', 'PedidoController@index')->name('pedidos');
+});
 
 Route::get('/conta', 'UserController@edit')->name('minha_conta');
 

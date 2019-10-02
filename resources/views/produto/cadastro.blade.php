@@ -21,7 +21,8 @@
 
             <!-- Default box -->
             <div class="box box-primary">
-                <form action="{{route('produto.gravar')}}" method="POST">
+                <form method="POST" action="{{route('produto.gravar')}}" >
+                    {{ csrf_field() }}
                     <div class="box-body">
                         <div class="row">
                             <div class="form-group col-md-12 has-feedback">
@@ -35,9 +36,9 @@
                                     <option value="" selected>Selecione uma Opção</option>
                                     @foreach ($categorias as $categoria)
                                         @if ($categoria->id == old('categoria'))
-                                            <option value="{{$categoria->id}}" onchange="subFunction()" selected>{{$categoria->nome}}</option>
+                                            <option value="{{$categoria->id}}" selected>{{$categoria->nome}}</option>
                                         @else
-                                            <option value="{{$categoria->id}}" onchange="subFunction()" >{{$categoria->nome}}</option>
+                                            <option value="{{$categoria->id}}">{{$categoria->nome}}</option>
                                         @endif
                                     @endforeach
 
@@ -55,13 +56,7 @@
                                 <label for="name">Subcategoria</label>
                                 <select class="form-control" name="subcategoria" id="subcategoria">
                                     <option value="" selected>Selecione uma Opção</option>
-                                    @foreach ($subcategorias as $subcategoria)
-                                        @if ($subcategoria->id == old('subcategoria'))
-                                            <option value="{{$subcategoria->id}}" selected>{{$subcategoria->sub_categoria}}</option>
-                                        @else
-                                            <option value="{{$subcategoria->id}}" >{{$subcategoria->sub_categoria}}</option>
-                                        @endif
-                                    @endforeach
+
                                 </select>
                             </div>
 
@@ -81,18 +76,12 @@
                                 <label for="name">Tipo Quantidade</label>
                                 <select class="form-control" name="tipoQuantidade" id="tipoQuantidade">
                                     <option value="" selected>Selecione uma Opção</option>
-                                    @foreach ($tipoQuantidades as $tipoQuantidade)
-                                        @if ($tipoQuantidade->id == old('tipoQuantidade'))
-                                            <option value="{{$tipoQuantidade->id}}" selected>{{$tipoQuantidade->tipo}}</option>
-                                        @else
-                                            <option value="{{$tipoQuantidade->id}}" >{{$tipoQuantidade->tipo}}</option>
-                                        @endif
-                                    @endforeach
                                 </select>
                             </div>
+                            <p id="demo"> </p>
                             <div class="form-group col-md-4 has-feedback">
                                 <label for="name">Nível de Emergência</label>
-                                <input class="form-control" type="number" name="emergencia" id="emergencia" value="{{old('emergencia')}}">
+                                <input class="form-control" type="number" name="nivelEmergencia" id="nivelEmergencia" value="{{old('emergencia')}}">
                             </div>
                         </div>
                     </div>
@@ -103,15 +92,26 @@
                 </form>
             </div>
 
+
             @include('layouts.modal', ['idModal' => 'addCategoria', 'titulo' => 'Adicionar Categoria', 'actionForm' => 'createCategoria', 'nameModal' => 'nome', 'equipamentoId' => '0', 'idInput' => 'novaSubAdm', 'funcaoJS' => 'insertSubAdm'])
         </section>
     </div>
+@endsection
 
+@section('scripts_adicionais')
     <script>
-        function subFunction() {
-            var x = document.getElementById("mySelect").value;
-            document.getElementById("demo").innerHTML = "You selected: " + x;
-        }
+       $('#categoria').on('change',function(e){
+           console.log(e);
+
+           var cat_id = e.target.value;
+           $('#subcategoria').empty();
+           $.get('/ajax-subcat?cat_id=' + cat_id, function (data) {
+               $.each(data, function(subcatObj){
+                   $('#subcategoria').append('<option value="'+subcatObj.id+'">'+subcatObj.name+'</option>');
+               });
+           });
+       });
+
     </script>
 
 @endsection
