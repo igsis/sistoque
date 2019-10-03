@@ -25,14 +25,8 @@ Route::group(['prefix' => 'Produto'], function(){
 
 });
 
-    Route::get('/ajax-subcat',function (){
+//    Route::get('getSubcategoria/{idCategoria}','ProdutoController@getSubcategoria'); Teste Ajax
 
-       $cat_id = Input::get('cat_id');
-
-       $subcategorias = Subcategoria::where('categoria_produtos_id', $cat_id)->get();
-
-       return Response::json($subcategorias);
-    });
 
 Route::group(['prefix' => 'Pedido'], function(){
 

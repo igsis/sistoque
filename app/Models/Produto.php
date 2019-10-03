@@ -18,4 +18,15 @@ class Produto extends Model
         'subcategoria_produtos_id',
         'tipo_quantidades_id'
     ];
+
+    public function categoria()
+    {
+        return $this->belongsTo(Categoria::class);
+    }
+
+    public function subcategoria()
+    {
+        return $this->belongsTo(Subcategoria::class);
+    }
 }
+

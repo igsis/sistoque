@@ -11,4 +11,14 @@ class Categoria extends Model
     public $timestamps = false;
 
     protected $fillable = ['nome'];
+
+    public function subcategoria()
+    {
+        return $this->hasMany(Subcategoria::class);
+    }
+
+    public function produto()
+    {
+        $this->hasMany(Produto::class);
+    }
 }

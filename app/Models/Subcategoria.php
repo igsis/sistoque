@@ -11,4 +11,15 @@ class Subcategoria extends Model
     public $timestamps = false;
 
     protected $fillable = ['sub_categoria'];
+
+    public function categoria()
+    {
+        return $this->belongsTo(Categoria::class);
+    }
+
+    public function produto()
+    {
+        return $this->hasMany(Produto::class);
+    }
 }
+

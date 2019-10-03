@@ -15,6 +15,7 @@ class ProdutoController extends Controller
         $produtos = Produto::all();
         return view('produto.listar', compact('produtos'));
     }
+
     public function create()
     {
         $categorias = Categoria::orderBy('nome')->get();
@@ -23,6 +24,12 @@ class ProdutoController extends Controller
 
         return view('produto.cadastro', compact('categorias', 'subcategorias', 'tipoQuantidades'));
     }
+
+    //    public function getSubcategoria($idCategoria)
+//    {
+//        $subcategorias = Subcategoria::where("categoria_produtos_id", $idCategoria);
+//        return Response::json($subcategorias);
+//    }
 
     public function store(Request $request)
     {

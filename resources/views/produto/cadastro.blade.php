@@ -56,7 +56,13 @@
                                 <label for="name">Subcategoria</label>
                                 <select class="form-control" name="subcategoria" id="subcategoria">
                                     <option value="" selected>Selecione uma Opção</option>
-
+                                    @foreach ($subcategorias as $subcategoria)
+                                        @if ($subcategoria->id == old('subcategoria'))
+                                            <option value="{{$subcategoria->id}}" selected>{{$subcategoria->sub_categoria}}</option>
+                                        @else
+                                            <option value="{{$subcategoria->id}}">{{$subcategoria->sub_categoria}}</option>
+                                        @endif
+                                    @endforeach
                                 </select>
                             </div>
 
@@ -76,6 +82,13 @@
                                 <label for="name">Tipo Quantidade</label>
                                 <select class="form-control" name="tipoQuantidade" id="tipoQuantidade">
                                     <option value="" selected>Selecione uma Opção</option>
+                                    @foreach ($tipoQuantidades as $tipoQuantidade)
+                                        @if ($tipoQuantidade->id == old('tipoQuantidade'))
+                                            <option value="{{$tipoQuantidade->id}}" selected>{{$tipoQuantidade->tipo}}</option>
+                                        @else
+                                            <option value="{{$tipoQuantidade->id}}">{{$tipoQuantidade->tipo}}</option>
+                                        @endif
+                                    @endforeach
                                 </select>
                             </div>
                             <p id="demo"> </p>
@@ -99,19 +112,17 @@
 @endsection
 
 @section('scripts_adicionais')
-    <script>
-       $('#categoria').on('change',function(e){
-           console.log(e);
+{{--    <script type="text/javascript">--}}
+{{--        $('select[name=categoria]').change(function () {--}}
+{{--            var idCategoria = $(this).val();--}}
 
-           var cat_id = e.target.value;
-           $('#subcategoria').empty();
-           $.get('/ajax-subcat?cat_id=' + cat_id, function (data) {
-               $.each(data, function(subcatObj){
-                   $('#subcategoria').append('<option value="'+subcatObj.id+'">'+subcatObj.name+'</option>');
-               });
-           });
-       });
+{{--            $.get('/getSubcategoria/' + idCategoria, function (subcategorias) {--}}
+{{--                $('select[name=subcategoria]').empty();--}}
+{{--                $.each(subcategorias, function (key, value) {--}}
+{{--                    $('select[name=subcategoria]').append('<option value=' + value.id + '>' + value.sub_categoria + '</option>');--}}
+{{--                });--}}
+{{--            });--}}
+{{--        });--}}
 
-    </script>
-
+{{--    </script>--}}
 @endsection
