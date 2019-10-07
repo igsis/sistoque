@@ -116,7 +116,8 @@
 {{--        $('select[name=categoria]').change(function () {--}}
 {{--            var idCategoria = $(this).val();--}}
 
-{{--            $.get('/getSubcategoria/' + idCategoria, function (subcategorias) {--}}
+{{--            $.get(--}}
+{{--                + idCategoria, function (subcategorias) {--}}
 {{--                $('select[name=subcategoria]').empty();--}}
 {{--                $.each(subcategorias, function (key, value) {--}}
 {{--                    $('select[name=subcategoria]').append('<option value=' + value.id + '>' + value.sub_categoria + '</option>');--}}

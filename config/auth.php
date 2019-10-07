@@ -46,25 +46,6 @@ return [
             'provider' => 'users',
         ],
 
-        // pessoaFisica guards
-        'pessoaFisica' => [
-            'driver' => 'session',
-            'provider' => 'pessoa_fisicas',
-        ],
-        'pessoaFisica-api' => [
-            'driver' => 'token',
-            'provider' => 'pessoa_fisicas',
-        ],
-
-        // pessoaJuridica guards
-        'pessoaJuridica' => [
-            'driver' => 'session',
-            'provider' => 'pessoa_juridicas',
-        ],
-        'pessoaJuridica-api' => [
-            'driver' => 'token',
-            'provider' => 'pessoa_juridicas',
-        ],
     ],
 
     /*
@@ -89,18 +70,6 @@ return [
             'driver' => 'eloquent',
             'model' => sitoque\Models\User::class,
         ],
-
-        //providers
-
-        'pessoa_fisicas' => [
-            'driver' => 'eloquent',
-            'model' => ccult\Models\PessoaFisica::class,
-        ],
-
-        'pessoa_juridicas' => [
-            'driver' => 'eloquent',
-            'model' => ccult\Models\PessoaJuridica::class,
-        ],
     ],
 
     /*
@@ -122,18 +91,6 @@ return [
         'users' => [
             'provider' => 'users',
             'table' => 'password_resets',
-            'expire' => 60,
-        ],
-
-        'pessoaFisica' => [
-            'provider' => 'pessoaFisica',
-            'table' => 'pf_password_resets',
-            'expire' => 60,
-        ],
-
-        'pessoaJuridica' => [
-            'provider' => 'pessoaJuridica',
-            'table' => 'pj_password_resets',
             'expire' => 60,
         ],
     ],

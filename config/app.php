@@ -157,8 +157,6 @@ return [
          */
         sitoque\Providers\AppServiceProvider::class,
         sitoque\Providers\AuthServiceProvider::class,
-        sitoque\Providers\MenuPessoaFisicaProvider::class,
-        sitoque\Providers\MenuPessoaJuridicaProvider::class,
         sitoque\Providers\MenuUserAdminProvider::class,
         // sitoque\Providers\BroadcastServiceProvider::class,
         sitoque\Providers\EventServiceProvider::class,
