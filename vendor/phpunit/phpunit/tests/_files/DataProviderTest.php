@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -17,7 +17,7 @@ class DataProviderTest extends TestCase
             [0, 0, 0],
             [0, 1, 1],
             [1, 1, 3],
-            [1, 0, 1]
+            [1, 0, 1],
         ];
     }
 

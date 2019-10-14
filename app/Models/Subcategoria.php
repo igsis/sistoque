@@ -1,6 +1,6 @@
 <?php
 
-namespace sitoque\Models;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,16 +10,19 @@ class Subcategoria extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['sub_categoria'];
+    protected $fillable = [
+        'nome',
+        'categoria_produtos_id'
+        ];
 
     public function categoria()
     {
-        return $this->belongsTo(Categoria::class);
+        return $this->belongsTo(Categoria::class,'categoria_produtos_id','id');
     }
 
     public function produto()
     {
-        return $this->hasMany(Produto::class);
+        return $this->hasMany(Produto::class,'subcategoria_produtos_id','id');
     }
 }
 

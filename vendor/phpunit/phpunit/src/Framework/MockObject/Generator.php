@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -11,21 +11,12 @@ namespace PHPUnit\Framework\MockObject;
 
 use Doctrine\Instantiator\Exception\ExceptionInterface as InstantiatorException;
 use Doctrine\Instantiator\Instantiator;
-use Iterator;
-use IteratorAggregate;
-use PHPUnit\Framework\Exception;
-use PHPUnit\Util\InvalidArgumentHelper;
-use ReflectionClass;
-use ReflectionException;
-use ReflectionMethod;
-use SoapClient;
-use Text_Template;
-use Traversable;
+use PHPUnit\Framework\InvalidArgumentException;
 
 /**
- * Mock Object Code Generator
+ * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
-class Generator
+final class Generator
 {
     /**
      * @var array
@@ -49,7 +40,7 @@ class Generator
     private static $cache = [];
 
     /**
-     * @var Text_Template[]
+     * @var \Text_Template[]
      */
     private static $templates = [];
 
@@ -57,36 +48,18 @@ class Generator
      * Returns a mock object for the specified class.
      *
      * @param string|string[] $type
-     * @param array           $methods
-     * @param string          $mockClassName
-     * @param bool            $callOriginalConstructor
-     * @param bool            $callOriginalClone
-     * @param bool            $callAutoload
-     * @param bool            $cloneArguments
-     * @param bool            $callOriginalMethods
-     * @param object          $proxyTarget
-     * @param bool            $allowMockingUnknownTypes
-     * @param bool            $returnValueGeneration
+     * @param null|array      $methods
      *
-     * @throws Exception
      * @throws RuntimeException
-     * @throws \PHPUnit\Framework\Exception
-     * @throws \ReflectionException
-     *
-     * @return MockObject
      */
-    public function getMock($type, $methods = [], array $arguments = [], $mockClassName = '', $callOriginalConstructor = true, $callOriginalClone = true, $callAutoload = true, $cloneArguments = true, $callOriginalMethods = false, $proxyTarget = null, $allowMockingUnknownTypes = true, $returnValueGeneration = true)
+    public function getMock($type, $methods = [], array $arguments = [], string $mockClassName = '', bool $callOriginalConstructor = true, bool $callOriginalClone = true, bool $callAutoload = true, bool $cloneArguments = true, bool $callOriginalMethods = false, object $proxyTarget = null, bool $allowMockingUnknownTypes = true, bool $returnValueGeneration = true): MockObject
     {
         if (!\is_array($type) && !\is_string($type)) {
-            throw InvalidArgumentHelper::factory(1, 'array or string');
-        }
-
-        if (!\is_string($mockClassName)) {
-            throw InvalidArgumentHelper::factory(4, 'string');
+            throw InvalidArgumentException::create(1, 'array or string');
         }
 
         if (!\is_array($methods) && null !== $methods) {
-            throw InvalidArgumentHelper::factory(2, 'array', $methods);
+            throw InvalidArgumentException::create(2, 'array');
         }
 
         if ($type === 'Traversable' || $type === '\\Traversable') {
@@ -96,7 +69,7 @@ class Generator
         if (\is_array($type)) {
             $type = \array_unique(
                 \array_map(
-                    function ($type) {
+                    static function ($type) {
                         if ($type === 'Traversable' ||
                             $type === '\\Traversable' ||
                             $type === '\\Iterator') {
@@ -123,23 +96,19 @@ class Generator
                         );
                     }
                 }
-            } else {
-                if (!\class_exists($type, $callAutoload) &&
-                    !\interface_exists($type, $callAutoload)
-                ) {
-                    throw new RuntimeException(
-                        \sprintf(
-                            'Cannot stub or mock class or interface "%s" which does not exist',
-                            $type
-                        )
-                    );
-                }
+            } elseif (!\class_exists($type, $callAutoload) && !\interface_exists($type, $callAutoload)) {
+                throw new RuntimeException(
+                    \sprintf(
+                        'Cannot stub or mock class or interface "%s" which does not exist',
+                        $type
+                    )
+                );
             }
         }
 
         if (null !== $methods) {
             foreach ($methods as $method) {
-                if (!\preg_match('~[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*~', $method)) {
+                if (!\preg_match('~[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*~', (string) $method)) {
                     throw new RuntimeException(
                         \sprintf(
                             'Cannot stub or mock method with invalid name "%s"',
@@ -161,9 +130,17 @@ class Generator
         }
 
         if ($mockClassName !== '' && \class_exists($mockClassName, false)) {
-            $reflect = new ReflectionClass($mockClassName);
+            try {
+                $reflector = new \ReflectionClass($mockClassName);
+            } catch (\ReflectionException $e) {
+                throw new RuntimeException(
+                    $e->getMessage(),
+                    (int) $e->getCode(),
+                    $e
+                );
+            }
 
-            if (!$reflect->implementsInterface(MockObject::class)) {
+            if (!$reflector->implementsInterface(MockObject::class)) {
                 throw new RuntimeException(
                     \sprintf(
                         'Class "%s" already exists.',
@@ -173,7 +150,7 @@ class Generator
             }
         }
 
-        if ($callOriginalConstructor === false && $callOriginalMethods === true) {
+        if (!$callOriginalConstructor && $callOriginalMethods) {
             throw new RuntimeException(
                 'Proxying to original methods requires invoking the original constructor'
             );
@@ -190,8 +167,7 @@ class Generator
         );
 
         return $this->getObject(
-            $mock['code'],
-            $mock['mockClassName'],
+            $mock,
             $type,
             $callOriginalConstructor,
             $callAutoload,
@@ -205,36 +181,25 @@ class Generator
     /**
      * Returns a mock object for the specified abstract class with all abstract
      * methods of the class mocked. Concrete methods to mock can be specified with
-     * the last parameter
+     * the $mockedMethods parameter
      *
-     * @param string $originalClassName
-     * @param string $mockClassName
-     * @param bool   $callOriginalConstructor
-     * @param bool   $callOriginalClone
-     * @param bool   $callAutoload
-     * @param array  $mockedMethods
-     * @param bool   $cloneArguments
-     *
-     * @throws \ReflectionException
      * @throws RuntimeException
-     * @throws Exception
-     *
-     * @return MockObject
      */
-    public function getMockForAbstractClass($originalClassName, array $arguments = [], $mockClassName = '', $callOriginalConstructor = true, $callOriginalClone = true, $callAutoload = true, $mockedMethods = [], $cloneArguments = true)
+    public function getMockForAbstractClass(string $originalClassName, array $arguments = [], string $mockClassName = '', bool $callOriginalConstructor = true, bool $callOriginalClone = true, bool $callAutoload = true, array $mockedMethods = [], bool $cloneArguments = true): MockObject
     {
-        if (!\is_string($originalClassName)) {
-            throw InvalidArgumentHelper::factory(1, 'string');
-        }
-
-        if (!\is_string($mockClassName)) {
-            throw InvalidArgumentHelper::factory(3, 'string');
-        }
-
         if (\class_exists($originalClassName, $callAutoload) ||
             \interface_exists($originalClassName, $callAutoload)) {
-            $reflector = new ReflectionClass($originalClassName);
-            $methods   = $mockedMethods;
+            try {
+                $reflector = new \ReflectionClass($originalClassName);
+            } catch (\ReflectionException $e) {
+                throw new RuntimeException(
+                    $e->getMessage(),
+                    (int) $e->getCode(),
+                    $e
+                );
+            }
+
+            $methods = $mockedMethods;
 
             foreach ($reflector->getMethods() as $method) {
                 if ($method->isAbstract() && !\in_array($method->getName(), $methods, true)) {
@@ -268,30 +233,10 @@ class Generator
      * of the trait mocked. Concrete methods to mock can be specified with the
      * `$mockedMethods` parameter.
      *
-     * @param string $traitName
-     * @param string $mockClassName
-     * @param bool   $callOriginalConstructor
-     * @param bool   $callOriginalClone
-     * @param bool   $callAutoload
-     * @param array  $mockedMethods
-     * @param bool   $cloneArguments
-     *
-     * @throws \ReflectionException
      * @throws RuntimeException
-     * @throws Exception
-     *
-     * @return MockObject
      */
-    public function getMockForTrait($traitName, array $arguments = [], $mockClassName = '', $callOriginalConstructor = true, $callOriginalClone = true, $callAutoload = true, $mockedMethods = [], $cloneArguments = true)
+    public function getMockForTrait(string $traitName, array $arguments = [], string $mockClassName = '', bool $callOriginalConstructor = true, bool $callOriginalClone = true, bool $callAutoload = true, array $mockedMethods = [], bool $cloneArguments = true): MockObject
     {
-        if (!\is_string($traitName)) {
-            throw InvalidArgumentHelper::factory(1, 'string');
-        }
-
-        if (!\is_string($mockClassName)) {
-            throw InvalidArgumentHelper::factory(3, 'string');
-        }
-
         if (!\trait_exists($traitName, $callAutoload)) {
             throw new RuntimeException(
                 \sprintf(
@@ -313,14 +258,12 @@ class Generator
             [
                 'prologue'   => 'abstract ',
                 'class_name' => $className['className'],
-                'trait_name' => $traitName
+                'trait_name' => $traitName,
             ]
         );
 
-        $this->evalClass(
-            $classTemplate->render(),
-            $className['className']
-        );
+        $mockTrait = new MockTrait($classTemplate->render(), $className['className']);
+        $mockTrait->generate();
 
         return $this->getMockForAbstractClass($className['className'], $arguments, $mockClassName, $callOriginalConstructor, $callOriginalClone, $callAutoload, $mockedMethods, $cloneArguments);
     }
@@ -328,28 +271,10 @@ class Generator
     /**
      * Returns an object for the specified trait.
      *
-     * @param string $traitName
-     * @param string $traitClassName
-     * @param bool   $callOriginalConstructor
-     * @param bool   $callOriginalClone
-     * @param bool   $callAutoload
-     *
-     * @throws \ReflectionException
      * @throws RuntimeException
-     * @throws Exception
-     *
-     * @return object
      */
-    public function getObjectForTrait($traitName, array $arguments = [], $traitClassName = '', $callOriginalConstructor = true, $callOriginalClone = true, $callAutoload = true)
+    public function getObjectForTrait(string $traitName, string $traitClassName = '', bool $callAutoload = true, bool $callOriginalConstructor = false, array $arguments = []): object
     {
-        if (!\is_string($traitName)) {
-            throw InvalidArgumentHelper::factory(1, 'string');
-        }
-
-        if (!\is_string($traitClassName)) {
-            throw InvalidArgumentHelper::factory(3, 'string');
-        }
-
         if (!\trait_exists($traitName, $callAutoload)) {
             throw new RuntimeException(
                 \sprintf(
@@ -371,28 +296,23 @@ class Generator
             [
                 'prologue'   => '',
                 'class_name' => $className['className'],
-                'trait_name' => $traitName
+                'trait_name' => $traitName,
             ]
         );
 
-        return $this->getObject($classTemplate->render(), $className['className']);
+        return $this->getObject(
+            new MockTrait(
+                $classTemplate->render(),
+                $className['className']
+            ),
+            '',
+            $callOriginalConstructor,
+            $callAutoload,
+            $arguments
+        );
     }
 
-    /**
-     * @param array|string $type
-     * @param array        $methods
-     * @param string       $mockClassName
-     * @param bool         $callOriginalClone
-     * @param bool         $callAutoload
-     * @param bool         $cloneArguments
-     * @param bool         $callOriginalMethods
-     *
-     * @throws \ReflectionException
-     * @throws \PHPUnit\Framework\MockObject\RuntimeException
-     *
-     * @return array
-     */
-    public function generate($type, array $methods = null, $mockClassName = '', $callOriginalClone = true, $callAutoload = true, $cloneArguments = true, $callOriginalMethods = false)
+    public function generate($type, array $methods = null, string $mockClassName = '', bool $callOriginalClone = true, bool $callAutoload = true, bool $cloneArguments = true, bool $callOriginalMethods = false): MockClass
     {
         if (\is_array($type)) {
             \sort($type);
@@ -409,6 +329,7 @@ class Generator
                 $callOriginalMethods
             );
         }
+
         $key = \md5(
             \is_array($type) ? \implode('_', $type) : $type .
             \serialize($methods) .
@@ -433,14 +354,9 @@ class Generator
     }
 
     /**
-     * @param string $wsdlFile
-     * @param string $className
-     *
      * @throws RuntimeException
-     *
-     * @return string
      */
-    public function generateClassFromWsdl($wsdlFile, $className, array $methods = [], array $options = [])
+    public function generateClassFromWsdl(string $wsdlFile, string $className, array $methods = [], array $options = []): string
     {
         if (!\extension_loaded('soap')) {
             throw new RuntimeException(
@@ -449,9 +365,18 @@ class Generator
         }
 
         $options  = \array_merge($options, ['cache_wsdl' => \WSDL_CACHE_NONE]);
-        $client   = new SoapClient($wsdlFile, $options);
-        $_methods = \array_unique($client->__getFunctions());
-        unset($client);
+
+        try {
+            $client   = new \SoapClient($wsdlFile, $options);
+            $_methods = \array_unique($client->__getFunctions());
+            unset($client);
+        } catch (\SoapFault $e) {
+            throw new RuntimeException(
+                $e->getMessage(),
+                (int) $e->getCode(),
+                $e
+            );
+        }
 
         \sort($_methods);
 
@@ -459,18 +384,16 @@ class Generator
         $methodsBuffer  = '';
 
         foreach ($_methods as $method) {
-            $nameStart = \strpos($method, ' ') + 1;
-            $nameEnd   = \strpos($method, '(');
-            $name      = \substr($method, $nameStart, $nameEnd - $nameStart);
+            \preg_match_all('/[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*\(/', $method, $matches, \PREG_OFFSET_CAPTURE);
+            $lastFunction = \array_pop($matches[0]);
+            $nameStart    = $lastFunction[1];
+            $nameEnd      = $nameStart + \strlen($lastFunction[0]) - 1;
+            $name         = \str_replace('(', '', $lastFunction[0]);
 
             if (empty($methods) || \in_array($name, $methods, true)) {
-                $args    = \explode(
+                $args = \explode(
                     ',',
-                    \substr(
-                        $method,
-                        $nameEnd + 1,
-                        \strpos($method, ')') - $nameEnd - 1
-                    )
+                    \str_replace(')', '', \substr($method, $nameEnd + 1))
                 );
 
                 foreach (\range(0, \count($args) - 1) as $i) {
@@ -480,7 +403,7 @@ class Generator
                 $methodTemplate->setVar(
                     [
                         'method_name' => $name,
-                        'arguments'   => \implode(', ', $args)
+                        'arguments'   => \implode(', ', $args),
                     ]
                 );
 
@@ -511,7 +434,7 @@ class Generator
                 'class_name' => $className,
                 'wsdl'       => $wsdlFile,
                 'options'    => $optionsBuffer,
-                'methods'    => $methodsBuffer
+                'methods'    => $methodsBuffer,
             ]
         );
 
@@ -519,15 +442,22 @@ class Generator
     }
 
     /**
-     * @param string $className
+     * @throws RuntimeException
      *
-     * @throws \ReflectionException
-     *
-     * @return array
+     * @return string[]
      */
-    public function getClassMethods($className)
+    public function getClassMethods(string $className): array
     {
-        $class   = new ReflectionClass($className);
+        try {
+            $class = new \ReflectionClass($className);
+        } catch (\ReflectionException $e) {
+            throw new RuntimeException(
+                $e->getMessage(),
+                (int) $e->getCode(),
+                $e
+            );
+        }
+
         $methods = [];
 
         foreach ($class->getMethods() as $method) {
@@ -540,37 +470,82 @@ class Generator
     }
 
     /**
-     * @param string       $code
-     * @param string       $className
-     * @param array|string $type
-     * @param bool         $callOriginalConstructor
-     * @param bool         $callAutoload
-     * @param bool         $callOriginalMethods
-     * @param object       $proxyTarget
-     * @param bool         $returnValueGeneration
-     *
-     * @throws \ReflectionException
      * @throws RuntimeException
      *
-     * @return MockObject
+     * @return MockMethod[]
      */
-    private function getObject($code, $className, $type = '', $callOriginalConstructor = false, $callAutoload = false, array $arguments = [], $callOriginalMethods = false, $proxyTarget = null, $returnValueGeneration = true)
+    public function mockClassMethods(string $className, bool $callOriginalMethods, bool $cloneArguments): array
     {
-        $this->evalClass($code, $className);
+        try {
+            $class = new \ReflectionClass($className);
+        } catch (\ReflectionException $e) {
+            throw new RuntimeException(
+                $e->getMessage(),
+                (int) $e->getCode(),
+                $e
+            );
+        }
 
-        if ($callOriginalConstructor &&
-            \is_string($type) &&
-            !\interface_exists($type, $callAutoload)) {
+        $methods = [];
+
+        foreach ($class->getMethods() as $method) {
+            if (($method->isPublic() || $method->isAbstract()) && $this->canMockMethod($method)) {
+                $methods[] = MockMethod::fromReflection($method, $callOriginalMethods, $cloneArguments);
+            }
+        }
+
+        return $methods;
+    }
+
+    /**
+     * @return \ReflectionMethod[]
+     */
+    private function getInterfaceOwnMethods(string $interfaceName): array
+    {
+        try {
+            $reflect = new \ReflectionClass($interfaceName);
+        } catch (\ReflectionException $e) {
+            throw new RuntimeException(
+                $e->getMessage(),
+                (int) $e->getCode(),
+                $e
+            );
+        }
+
+        $methods = [];
+
+        foreach ($reflect->getMethods() as $method) {
+            if ($method->getDeclaringClass()->getName() === $interfaceName) {
+                $methods[] = $method;
+            }
+        }
+
+        return $methods;
+    }
+
+    private function getObject(MockType $mockClass, $type = '', bool $callOriginalConstructor = false, bool $callAutoload = false, array $arguments = [], bool $callOriginalMethods = false, object $proxyTarget = null, bool $returnValueGeneration = true)
+    {
+        $className = $mockClass->generate();
+
+        if ($callOriginalConstructor) {
             if (\count($arguments) === 0) {
                 $object = new $className;
             } else {
-                $class  = new ReflectionClass($className);
+                try {
+                    $class = new \ReflectionClass($className);
+                } catch (\ReflectionException $e) {
+                    throw new RuntimeException(
+                        $e->getMessage(),
+                        (int) $e->getCode(),
+                        $e
+                    );
+                }
+
                 $object = $class->newInstanceArgs($arguments);
             }
         } else {
             try {
-                $instantiator = new Instantiator;
-                $object       = $instantiator->instantiate($className);
+                $object = (new Instantiator)->instantiate($className);
             } catch (InstantiatorException $exception) {
                 throw new RuntimeException($exception->getMessage());
             }
@@ -581,7 +556,16 @@ class Generator
                 if (\count($arguments) === 0) {
                     $proxyTarget = new $type;
                 } else {
-                    $class       = new ReflectionClass($type);
+                    try {
+                        $class = new \ReflectionClass($type);
+                    } catch (\ReflectionException $e) {
+                        throw new RuntimeException(
+                            $e->getMessage(),
+                            (int) $e->getCode(),
+                            $e
+                        );
+                    }
+
                     $proxyTarget = $class->newInstanceArgs($arguments);
                 }
             }
@@ -597,43 +581,24 @@ class Generator
     }
 
     /**
-     * @param string $code
-     * @param string $className
-     */
-    private function evalClass($code, $className): void
-    {
-        if (!\class_exists($className, false)) {
-            eval($code);
-        }
-    }
-
-    /**
      * @param array|string $type
-     * @param null|array   $methods
-     * @param string       $mockClassName
-     * @param bool         $callOriginalClone
-     * @param bool         $callAutoload
-     * @param bool         $cloneArguments
-     * @param bool         $callOriginalMethods
      *
-     * @throws \InvalidArgumentException
-     * @throws \ReflectionException
      * @throws RuntimeException
-     *
-     * @return array
      */
-    private function generateMock($type, $methods, $mockClassName, $callOriginalClone, $callAutoload, $cloneArguments, $callOriginalMethods)
+    private function generateMock($type, ?array $explicitMethods, string $mockClassName, bool $callOriginalClone, bool $callAutoload, bool $cloneArguments, bool $callOriginalMethods): MockClass
     {
-        $methodReflections   = [];
-        $classTemplate       = $this->getTemplate('mocked_class.tpl');
-
+        $classTemplate        = $this->getTemplate('mocked_class.tpl');
         $additionalInterfaces = [];
-        $cloneTemplate        = '';
+        $mockedCloneMethod    = false;
+        $unmockedCloneMethod  = false;
         $isClass              = false;
         $isInterface          = false;
-        $isMultipleInterfaces = false;
+        $class                = null;
+        $mockMethods          = new MockMethodSet;
 
         if (\is_array($type)) {
+            $interfaceMethods = [];
+
             foreach ($type as $_type) {
                 if (!\interface_exists($_type, $callAutoload)) {
                     throw new RuntimeException(
@@ -644,31 +609,49 @@ class Generator
                     );
                 }
 
-                $isMultipleInterfaces = true;
-
                 $additionalInterfaces[] = $_type;
-                $typeClass              = new ReflectionClass(
-                    $this->generateClassName(
-                    $_type,
-                    $mockClassName,
-                    'Mock_'
-                    )['fullClassName']
-                );
 
-                foreach ($this->getClassMethods($_type) as $method) {
-                    if (\in_array($method, $methods)) {
+                try {
+                    $typeClass = new \ReflectionClass($_type);
+                } catch (\ReflectionException $e) {
+                    throw new RuntimeException(
+                        $e->getMessage(),
+                        (int) $e->getCode(),
+                        $e
+                    );
+                }
+
+                foreach ($this->getClassMethods($_type) as $methodTrait) {
+                    if (\in_array($methodTrait, $interfaceMethods, true)) {
                         throw new RuntimeException(
                             \sprintf(
                                 'Duplicate method "%s" not allowed.',
-                                $method
+                                $methodTrait
                             )
                         );
                     }
 
-                    $methodReflections[$method] = $typeClass->getMethod($method);
-                    $methods[]                  = $method;
+                    try {
+                        $methodReflection = $typeClass->getMethod($methodTrait);
+                    } catch (\ReflectionException $e) {
+                        throw new RuntimeException(
+                            $e->getMessage(),
+                            (int) $e->getCode(),
+                            $e
+                        );
+                    }
+
+                    if ($this->canMockMethod($methodReflection)) {
+                        $mockMethods->addMethods(
+                            MockMethod::fromReflection($methodReflection, $callOriginalMethods, $cloneArguments)
+                        );
+
+                        $interfaceMethods[] = $methodTrait;
+                    }
                 }
             }
+
+            unset($interfaceMethods);
         }
 
         $mockClassName = $this->generateClassName(
@@ -694,22 +677,16 @@ class Generator
                 $epilogue = "\n\n}";
             }
 
-            $cloneTemplate = $this->getTemplate('mocked_clone.tpl');
+            $mockedCloneMethod = true;
         } else {
-            $class = new ReflectionClass($mockClassName['fullClassName']);
-
-            // @see https://github.com/sebastianbergmann/phpunit/issues/2995
-            if ($isInterface && $class->implementsInterface(\Throwable::class)) {
-                $additionalInterfaces[] = $class->getName();
-                $isInterface            = false;
-
-                $mockClassName = $this->generateClassName(
-                    \Exception::class,
-                    '',
-                    'Mock_'
+            try {
+                $class = new \ReflectionClass($mockClassName['fullClassName']);
+            } catch (\ReflectionException $e) {
+                throw new RuntimeException(
+                    $e->getMessage(),
+                    (int) $e->getCode(),
+                    $e
                 );
-
-                $class = new ReflectionClass($mockClassName['fullClassName']);
             }
 
             if ($class->isFinal()) {
@@ -721,97 +698,146 @@ class Generator
                 );
             }
 
+            // @see https://github.com/sebastianbergmann/phpunit/issues/2995
+            if ($isInterface && $class->implementsInterface(\Throwable::class)) {
+                $actualClassName        = \Exception::class;
+                $additionalInterfaces[] = $class->getName();
+                $isInterface            = false;
+
+                try {
+                    $class = new \ReflectionClass($actualClassName);
+                } catch (\ReflectionException $e) {
+                    throw new RuntimeException(
+                        $e->getMessage(),
+                        (int) $e->getCode(),
+                        $e
+                    );
+                }
+
+                foreach ($this->getInterfaceOwnMethods($mockClassName['fullClassName']) as $methodTrait) {
+                    $methodName = $methodTrait->getName();
+
+                    if ($class->hasMethod($methodName)) {
+                        try {
+                            $classMethod = $class->getMethod($methodName);
+                        } catch (\ReflectionException $e) {
+                            throw new RuntimeException(
+                                $e->getMessage(),
+                                (int) $e->getCode(),
+                                $e
+                            );
+                        }
+
+                        if (!$this->canMockMethod($classMethod)) {
+                            continue;
+                        }
+                    }
+
+                    $mockMethods->addMethods(
+                        MockMethod::fromReflection($methodTrait, $callOriginalMethods, $cloneArguments)
+                    );
+                }
+
+                $mockClassName = $this->generateClassName(
+                    $actualClassName,
+                    '',
+                    'Mock_'
+                );
+            }
+
+            // @see https://github.com/sebastianbergmann/phpunit-mock-objects/issues/103
+            if ($isInterface && $class->implementsInterface(\Traversable::class) &&
+                !$class->implementsInterface(\Iterator::class) &&
+                !$class->implementsInterface(\IteratorAggregate::class)) {
+                $additionalInterfaces[] = \Iterator::class;
+
+                $mockMethods->addMethods(
+                    ...$this->mockClassMethods(\Iterator::class, $callOriginalMethods, $cloneArguments)
+                );
+            }
+
             if ($class->hasMethod('__clone')) {
-                $cloneMethod = $class->getMethod('__clone');
+                try {
+                    $cloneMethod = $class->getMethod('__clone');
+                } catch (\ReflectionException $e) {
+                    throw new RuntimeException(
+                        $e->getMessage(),
+                        (int) $e->getCode(),
+                        $e
+                    );
+                }
 
                 if (!$cloneMethod->isFinal()) {
                     if ($callOriginalClone && !$isInterface) {
-                        $cloneTemplate = $this->getTemplate('unmocked_clone.tpl');
+                        $unmockedCloneMethod = true;
                     } else {
-                        $cloneTemplate = $this->getTemplate('mocked_clone.tpl');
+                        $mockedCloneMethod = true;
                     }
                 }
             } else {
-                $cloneTemplate = $this->getTemplate('mocked_clone.tpl');
+                $mockedCloneMethod = true;
             }
         }
 
-        if (\is_object($cloneTemplate)) {
-            $cloneTemplate = $cloneTemplate->render();
-        }
-
-        if (\is_array($methods) && empty($methods) &&
+        if ($explicitMethods === [] &&
             ($isClass || $isInterface)) {
-            $methods = $this->getClassMethods($mockClassName['fullClassName']);
+            $mockMethods->addMethods(
+                ...$this->mockClassMethods($mockClassName['fullClassName'], $callOriginalMethods, $cloneArguments)
+            );
         }
 
-        if (!\is_array($methods)) {
-            $methods = [];
+        if (\is_array($explicitMethods)) {
+            foreach ($explicitMethods as $methodName) {
+                if ($class !== null && $class->hasMethod($methodName)) {
+                    try {
+                        $methodTrait = $class->getMethod($methodName);
+                    } catch (\ReflectionException $e) {
+                        throw new RuntimeException(
+                            $e->getMessage(),
+                            (int) $e->getCode(),
+                            $e
+                        );
+                    }
+
+                    if ($this->canMockMethod($methodTrait)) {
+                        $mockMethods->addMethods(
+                            MockMethod::fromReflection($methodTrait, $callOriginalMethods, $cloneArguments)
+                        );
+                    }
+                } else {
+                    $mockMethods->addMethods(
+                        MockMethod::fromName(
+                            $mockClassName['fullClassName'],
+                            $methodName,
+                            $cloneArguments
+                        )
+                    );
+                }
+            }
         }
 
         $mockedMethods = '';
         $configurable  = [];
 
-        foreach ($methods as $methodName) {
-            if ($methodName !== '__construct' && $methodName !== '__clone') {
-                $configurable[] = \strtolower($methodName);
-            }
+        foreach ($mockMethods->asArray() as $mockMethod) {
+            $mockedMethods .= $mockMethod->generateCode();
+            $configurable[] = new ConfigurableMethod($mockMethod->getName(), $mockMethod->getReturnType());
         }
 
-        if (isset($class)) {
-            // https://github.com/sebastianbergmann/phpunit-mock-objects/issues/103
-            if ($isInterface && $class->implementsInterface(Traversable::class) &&
-                !$class->implementsInterface(Iterator::class) &&
-                !$class->implementsInterface(IteratorAggregate::class)) {
-                $additionalInterfaces[] = Iterator::class;
-                $methods                = \array_merge($methods, $this->getClassMethods(Iterator::class));
-            }
+        $methodTrait = '';
 
-            foreach ($methods as $methodName) {
-                try {
-                    $method = $class->getMethod($methodName);
-
-                    if ($this->canMockMethod($method)) {
-                        $mockedMethods .= $this->generateMockedMethodDefinitionFromExisting(
-                            $method,
-                            $cloneArguments,
-                            $callOriginalMethods
-                        );
-                    }
-                } catch (ReflectionException $e) {
-                    $mockedMethods .= $this->generateMockedMethodDefinition(
-                        $mockClassName['fullClassName'],
-                        $methodName,
-                        $cloneArguments
-                    );
-                }
-            }
-        } elseif ($isMultipleInterfaces) {
-            foreach ($methods as $methodName) {
-                if ($this->canMockMethod($methodReflections[$methodName])) {
-                    $mockedMethods .= $this->generateMockedMethodDefinitionFromExisting(
-                        $methodReflections[$methodName],
-                        $cloneArguments,
-                        $callOriginalMethods
-                    );
-                }
-            }
-        } else {
-            foreach ($methods as $methodName) {
-                $mockedMethods .= $this->generateMockedMethodDefinition(
-                    $mockClassName['fullClassName'],
-                    $methodName,
-                    $cloneArguments
-                );
-            }
+        if (!$mockMethods->hasMethod('method') && (!isset($class) || !$class->hasMethod('method'))) {
+            $methodTrait = \PHP_EOL . '    use \PHPUnit\Framework\MockObject\Method;';
         }
 
-        $method = '';
+        $cloneTrait = '';
 
-        if (!\in_array('method', $methods, true) && (!isset($class) || !$class->hasMethod('method'))) {
-            $methodTemplate = $this->getTemplate('mocked_class_method.tpl');
+        if ($mockedCloneMethod) {
+            $cloneTrait = \PHP_EOL . '    use \PHPUnit\Framework\MockObject\MockedCloneMethod;';
+        }
 
-            $method = $methodTemplate->render();
+        if ($unmockedCloneMethod) {
+            $cloneTrait = \PHP_EOL . '    use \PHPUnit\Framework\MockObject\UnmockedCloneMethod;';
         }
 
         $classTemplate->setVar(
@@ -823,30 +849,24 @@ class Generator
                     $isInterface,
                     $additionalInterfaces
                 ),
-                'clone'             => $cloneTemplate,
+                'clone'             => $cloneTrait,
                 'mock_class_name'   => $mockClassName['className'],
                 'mocked_methods'    => $mockedMethods,
-                'method'            => $method,
-                'configurable'      => '[' . \implode(', ', \array_map(function ($m) {
-                    return '\'' . $m . '\'';
-                }, $configurable)) . ']'
+                'method'            => $methodTrait,
             ]
         );
 
-        return [
-            'code'          => $classTemplate->render(),
-            'mockClassName' => $mockClassName['className']
-        ];
+        return new MockClass(
+            $classTemplate->render(),
+            $mockClassName['className'],
+            $configurable
+        );
     }
 
     /**
      * @param array|string $type
-     * @param string       $className
-     * @param string       $prefix
-     *
-     * @return array
      */
-    private function generateClassName($type, $className, $prefix)
+    private function generateClassName($type, string $className, string $prefix): array
     {
         if (\is_array($type)) {
             $type = \implode('_', $type);
@@ -870,7 +890,7 @@ class Generator
         if ($className === '') {
             do {
                 $className = $prefix . $type . '_' .
-                             \substr(\md5(\mt_rand()), 0, 8);
+                             \substr(\md5((string) \mt_rand()), 0, 8);
             } while (\class_exists($className, false));
         }
 
@@ -878,16 +898,11 @@ class Generator
             'className'         => $className,
             'originalClassName' => $type,
             'fullClassName'     => $fullClassName,
-            'namespaceName'     => $namespaceName
+            'namespaceName'     => $namespaceName,
         ];
     }
 
-    /**
-     * @param bool $isInterface
-     *
-     * @return string
-     */
-    private function generateMockClassDeclaration(array $mockClassName, $isInterface, array $additionalInterfaces = [])
+    private function generateMockClassDeclaration(array $mockClassName, bool $isInterface, array $additionalInterfaces = []): string
     {
         $buffer = 'class ';
 
@@ -901,7 +916,7 @@ class Generator
                 $interfaces
             );
 
-            if (!\in_array($mockClassName['originalClassName'], $additionalInterfaces)) {
+            if (!\in_array($mockClassName['originalClassName'], $additionalInterfaces, true)) {
                 $buffer .= ', ';
 
                 if (!empty($mockClassName['namespaceName'])) {
@@ -923,288 +938,22 @@ class Generator
         return $buffer;
     }
 
-    /**
-     * @param bool $cloneArguments
-     * @param bool $callOriginalMethods
-     *
-     * @throws \PHPUnit\Framework\MockObject\RuntimeException
-     *
-     * @return string
-     */
-    private function generateMockedMethodDefinitionFromExisting(ReflectionMethod $method, $cloneArguments, $callOriginalMethods)
-    {
-        if ($method->isPrivate()) {
-            $modifier = 'private';
-        } elseif ($method->isProtected()) {
-            $modifier = 'protected';
-        } else {
-            $modifier = 'public';
-        }
-
-        if ($method->isStatic()) {
-            $modifier .= ' static';
-        }
-
-        if ($method->returnsReference()) {
-            $reference = '&';
-        } else {
-            $reference = '';
-        }
-
-        if ($method->hasReturnType()) {
-            $returnType = (string) $method->getReturnType();
-        } else {
-            $returnType = '';
-        }
-
-        if (\preg_match('#\*[ \t]*+@deprecated[ \t]*+(.*?)\r?+\n[ \t]*+\*(?:[ \t]*+@|/$)#s', $method->getDocComment(), $deprecation)) {
-            $deprecation = \trim(\preg_replace('#[ \t]*\r?\n[ \t]*+\*[ \t]*+#', ' ', $deprecation[1]));
-        } else {
-            $deprecation = false;
-        }
-
-        return $this->generateMockedMethodDefinition(
-            $method->getDeclaringClass()->getName(),
-            $method->getName(),
-            $cloneArguments,
-            $modifier,
-            $this->getMethodParameters($method),
-            $this->getMethodParameters($method, true),
-            $returnType,
-            $reference,
-            $callOriginalMethods,
-            $method->isStatic(),
-            $deprecation,
-            $method->hasReturnType() && $method->getReturnType()->allowsNull()
-        );
-    }
-
-    /**
-     * @param string      $className
-     * @param string      $methodName
-     * @param bool        $cloneArguments
-     * @param string      $modifier
-     * @param string      $argumentsForDeclaration
-     * @param string      $argumentsForCall
-     * @param string      $returnType
-     * @param string      $reference
-     * @param bool        $callOriginalMethods
-     * @param bool        $static
-     * @param bool|string $deprecation
-     * @param bool        $allowsReturnNull
-     *
-     * @throws \ReflectionException
-     * @throws \PHPUnit\Framework\MockObject\RuntimeException
-     * @throws \InvalidArgumentException
-     *
-     * @return string
-     */
-    private function generateMockedMethodDefinition($className, $methodName, $cloneArguments = true, $modifier = 'public', $argumentsForDeclaration = '', $argumentsForCall = '', $returnType = '', $reference = '', $callOriginalMethods = false, $static = false, $deprecation = false, $allowsReturnNull = false)
-    {
-        if ($static) {
-            $templateFile = 'mocked_static_method.tpl';
-        } else {
-            if ($returnType === 'void') {
-                $templateFile = \sprintf(
-                    '%s_method_void.tpl',
-                    $callOriginalMethods ? 'proxied' : 'mocked'
-                );
-            } else {
-                $templateFile = \sprintf(
-                    '%s_method.tpl',
-                    $callOriginalMethods ? 'proxied' : 'mocked'
-                );
-            }
-        }
-
-        // @see https://bugs.php.net/bug.php?id=70722
-        if ($returnType === 'self') {
-            $returnType = $className;
-        }
-
-        // @see https://github.com/sebastianbergmann/phpunit-mock-objects/issues/406
-        if ($returnType === 'parent') {
-            $reflector = new ReflectionClass($className);
-
-            $parentClass = $reflector->getParentClass();
-
-            if ($parentClass === null) {
-                throw new RuntimeException(
-                    \sprintf(
-                        'Cannot mock %s::%s because "parent" return type declaration is used but %s does not have a parent class',
-                        $className,
-                        $methodName,
-                        $className
-                    )
-                );
-            }
-
-            $returnType = $parentClass->getName();
-        }
-
-        if (false !== $deprecation) {
-            $deprecation         = "The $className::$methodName method is deprecated ($deprecation).";
-            $deprecationTemplate = $this->getTemplate('deprecation.tpl');
-
-            $deprecationTemplate->setVar(
-                [
-                    'deprecation' => \var_export($deprecation, true),
-                ]
-            );
-
-            $deprecation = $deprecationTemplate->render();
-        }
-
-        $template = $this->getTemplate($templateFile);
-
-        $template->setVar(
-            [
-                'arguments_decl'  => $argumentsForDeclaration,
-                'arguments_call'  => $argumentsForCall,
-                'return_delim'    => $returnType ? ': ' : '',
-                'return_type'     => $allowsReturnNull ? '?' . $returnType : $returnType,
-                'arguments_count' => !empty($argumentsForCall) ? \substr_count($argumentsForCall, ',') + 1 : 0,
-                'class_name'      => $className,
-                'method_name'     => $methodName,
-                'modifier'        => $modifier,
-                'reference'       => $reference,
-                'clone_arguments' => $cloneArguments ? 'true' : 'false',
-                'deprecation'     => $deprecation
-            ]
-        );
-
-        return $template->render();
-    }
-
-    /**
-     * @return bool
-     */
-    private function canMockMethod(ReflectionMethod $method)
+    private function canMockMethod(\ReflectionMethod $method): bool
     {
         return !($method->isConstructor() || $method->isFinal() || $method->isPrivate() || $this->isMethodNameBlacklisted($method->getName()));
     }
 
-    /**
-     * Returns whether a method name is blacklisted
-     *
-     * @param string $name
-     *
-     * @return bool
-     */
-    private function isMethodNameBlacklisted($name)
+    private function isMethodNameBlacklisted(string $name): bool
     {
         return isset(self::BLACKLISTED_METHOD_NAMES[$name]);
     }
 
-    /**
-     * Returns the parameters of a function or method.
-     *
-     * @param bool $forCall
-     *
-     * @throws RuntimeException
-     *
-     * @return string
-     */
-    private function getMethodParameters(ReflectionMethod $method, $forCall = false)
-    {
-        $parameters = [];
-
-        foreach ($method->getParameters() as $i => $parameter) {
-            $name = '$' . $parameter->getName();
-
-            /* Note: PHP extensions may use empty names for reference arguments
-             * or "..." for methods taking a variable number of arguments.
-             */
-            if ($name === '$' || $name === '$...') {
-                $name = '$arg' . $i;
-            }
-
-            if ($parameter->isVariadic()) {
-                if ($forCall) {
-                    continue;
-                }
-
-                $name = '...' . $name;
-            }
-
-            $nullable        = '';
-            $default         = '';
-            $reference       = '';
-            $typeDeclaration = '';
-
-            if (!$forCall) {
-                if ($parameter->hasType() && $parameter->allowsNull()) {
-                    $nullable = '?';
-                }
-
-                if ($parameter->hasType() && (string) $parameter->getType() !== 'self') {
-                    $typeDeclaration = (string) $parameter->getType() . ' ';
-                } elseif ($parameter->isArray()) {
-                    $typeDeclaration = 'array ';
-                } elseif ($parameter->isCallable()) {
-                    $typeDeclaration = 'callable ';
-                } else {
-                    try {
-                        $class = $parameter->getClass();
-                    } catch (ReflectionException $e) {
-                        throw new RuntimeException(
-                            \sprintf(
-                                'Cannot mock %s::%s() because a class or ' .
-                                'interface used in the signature is not loaded',
-                                $method->getDeclaringClass()->getName(),
-                                $method->getName()
-                            ),
-                            0,
-                            $e
-                        );
-                    }
-
-                    if ($class !== null) {
-                        $typeDeclaration = $class->getName() . ' ';
-                    }
-                }
-
-                if (!$parameter->isVariadic()) {
-                    if ($parameter->isDefaultValueAvailable()) {
-                        $value = $parameter->getDefaultValueConstantName();
-
-                        if ($value === null) {
-                            $value = \var_export($parameter->getDefaultValue(), true);
-                        } elseif (!\defined($value)) {
-                            $rootValue = \preg_replace('/^.*\\\\/', '', $value);
-                            $value     = \defined($rootValue) ? $rootValue : $value;
-                        }
-
-                        $default = ' = ' . $value;
-                    } elseif ($parameter->isOptional()) {
-                        $default = ' = null';
-                    }
-                }
-            }
-
-            if ($parameter->isPassedByReference()) {
-                $reference = '&';
-            }
-
-            $parameters[] = $nullable . $typeDeclaration . $reference . $name . $default;
-        }
-
-        return \implode(', ', $parameters);
-    }
-
-    /**
-     * @param string $template
-     *
-     * @throws \InvalidArgumentException
-     *
-     * @return Text_Template
-     */
-    private function getTemplate($template)
+    private function getTemplate(string $template): \Text_Template
     {
         $filename = __DIR__ . \DIRECTORY_SEPARATOR . 'Generator' . \DIRECTORY_SEPARATOR . $template;
 
         if (!isset(self::$templates[$filename])) {
-            self::$templates[$filename] = new Text_Template($filename);
+            self::$templates[$filename] = new \Text_Template($filename);
         }
 
         return self::$templates[$filename];

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of the php-code-coverage package.
  *
@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\CodeCoverage\Report\Xml;
 
 use SebastianBergmann\Environment\Runtime;
@@ -42,6 +41,11 @@ final class BuildInformation
         if ($runtime->hasXdebug()) {
             $driverNode->setAttribute('name', 'xdebug');
             $driverNode->setAttribute('version', \phpversion('xdebug'));
+        }
+
+        if ($runtime->hasPCOV()) {
+            $driverNode->setAttribute('name', 'pcov');
+            $driverNode->setAttribute('version', \phpversion('pcov'));
         }
     }
 

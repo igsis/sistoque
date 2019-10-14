@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -13,8 +13,12 @@ use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Runner\TestSuiteSorter;
 use PHPUnit\TextUI\ResultPrinter;
+use PHPUnit\Util\TestDox\CliTestDoxPrinter;
 
-class ConfigurationTest extends TestCase
+/**
+ * @small
+ */
+final class ConfigurationTest extends TestCase
 {
     /**
      * @var Configuration
@@ -77,10 +81,6 @@ class ConfigurationTest extends TestCase
         $configurationInstance = Configuration::getInstance($configurationFilename);
 
         $this->assertTrue($configurationInstance->hasValidationErrors());
-        $this->assertArraySubset(
-            [1 => ["Element 'phpunit', attribute 'colors': 'Something else' is not a valid value of the atomic type 'xs:boolean'."]],
-            $configurationInstance->getValidationErrors()
-        );
     }
 
     public function testShouldUseDefaultValuesForInvalidIntegers(): void
@@ -93,6 +93,7 @@ class ConfigurationTest extends TestCase
     }
 
     /**
+     * @testdox Parse XML configuration root attribute $optionName = $optionValue
      * @dataProvider configurationRootOptionsProvider
      *
      * @group test-reorder
@@ -116,28 +117,27 @@ class ConfigurationTest extends TestCase
 
     public function configurationRootOptionsProvider(): array
     {
-        $tmpFilePath = \sys_get_temp_dir() . \DIRECTORY_SEPARATOR;
-
         return [
-            'executionOrder default'                                        => ['executionOrder', 'default', TestSuiteSorter::ORDER_DEFAULT],
-            'executionOrder random'                                         => ['executionOrder', 'random', TestSuiteSorter::ORDER_RANDOMIZED],
-            'executionOrder reverse'                                        => ['executionOrder', 'reverse', TestSuiteSorter::ORDER_REVERSED],
-            'cacheResult false'                                             => ['cacheResult', 'false', false],
-            'cacheResult true'                                              => ['cacheResult', 'true', true],
-            'cacheResultFile absolute path'                                 => ['cacheResultFile', '/path/to/result/cache', '/path/to/result/cache'],
-            'columns'                                                       => ['columns', 'max', 'max'],
-            'stopOnFailure'                                                 => ['stopOnFailure', 'true', true],
-            'stopOnWarning'                                                 => ['stopOnWarning', 'true', true],
-            'stopOnIncomplete'                                              => ['stopOnIncomplete', 'true', true],
-            'stopOnRisky'                                                   => ['stopOnRisky', 'true', true],
-            'stopOnSkipped'                                                 => ['stopOnSkipped', 'true', true],
-            'failOnWarning'                                                 => ['failOnWarning', 'true', true],
-            'failOnRisky'                                                   => ['failOnRisky', 'true', true],
-            'disableCodeCoverageIgnore'                                     => ['disableCodeCoverageIgnore', 'true', true],
-            'processIsolation'                                              => ['processIsolation', 'true', true],
-            'testSuiteLoaderFile absolute path'                             => ['testSuiteLoaderFile', '/path/to/file', '/path/to/file'],
-            'reverseDefectList'                                             => ['reverseDefectList', 'true', true],
-            'registerMockObjectsFromTestArgumentsRecursively'               => ['registerMockObjectsFromTestArgumentsRecursively', 'true', true],
+            'executionOrder default'                         => ['executionOrder', 'default', TestSuiteSorter::ORDER_DEFAULT],
+            'executionOrder random'                          => ['executionOrder', 'random', TestSuiteSorter::ORDER_RANDOMIZED],
+            'executionOrder reverse'                         => ['executionOrder', 'reverse', TestSuiteSorter::ORDER_REVERSED],
+            'executionOrder size'                            => ['executionOrder', 'size', TestSuiteSorter::ORDER_SIZE],
+            'cacheResult=false'                              => ['cacheResult', 'false', false],
+            'cacheResult=true'                               => ['cacheResult', 'true', true],
+            'cacheResultFile absolute path'                  => ['cacheResultFile', '/path/to/result/cache', '/path/to/result/cache'],
+            'columns'                                        => ['columns', 'max', 'max'],
+            'stopOnFailure'                                  => ['stopOnFailure', 'true', true],
+            'stopOnWarning'                                  => ['stopOnWarning', 'true', true],
+            'stopOnIncomplete'                               => ['stopOnIncomplete', 'true', true],
+            'stopOnRisky'                                    => ['stopOnRisky', 'true', true],
+            'stopOnSkipped'                                  => ['stopOnSkipped', 'true', true],
+            'failOnWarning'                                  => ['failOnWarning', 'true', true],
+            'failOnRisky'                                    => ['failOnRisky', 'true', true],
+            'disableCodeCoverageIgnore'                      => ['disableCodeCoverageIgnore', 'true', true],
+            'processIsolation'                               => ['processIsolation', 'true', true],
+            'testSuiteLoaderFile absolute path'              => ['testSuiteLoaderFile', '/path/to/file', '/path/to/file'],
+            'reverseDefectList'                              => ['reverseDefectList', 'true', true],
+            'registerMockObjectsFromTestArgumentsRecursively'=> ['registerMockObjectsFromTestArgumentsRecursively', 'true', true],
         ];
     }
 
@@ -170,7 +170,7 @@ class ConfigurationTest extends TestCase
                                 'path'   => '/path/to/files',
                                 'prefix' => '',
                                 'suffix' => '.php',
-                                'group'  => 'DEFAULT'
+                                'group'  => 'DEFAULT',
                             ],
                         ],
                         'file' => [
@@ -184,7 +184,7 @@ class ConfigurationTest extends TestCase
                                 'path'   => '/path/to/files',
                                 'prefix' => '',
                                 'suffix' => '.php',
-                                'group'  => 'DEFAULT'
+                                'group'  => 'DEFAULT',
                             ],
                         ],
                         'file' => [
@@ -256,7 +256,7 @@ class ConfigurationTest extends TestCase
                 [
                     'class'     => 'IncludePathListener',
                     'file'      => __FILE__,
-                    'arguments' => []
+                    'arguments' => [],
                 ],
                 [
                     'class'     => 'CompactArgumentsListener',
@@ -301,13 +301,13 @@ class ConfigurationTest extends TestCase
                 [
                     'class'     => 'IncludePathExtension',
                     'file'      => __FILE__,
-                    'arguments' => []
+                    'arguments' => [],
                 ],
                 [
                     'class'     => 'CompactArgumentsExtension',
                     'file'      => '/CompactArgumentsExtension.php',
                     'arguments' => [
-                        0 => 42
+                        0 => 42,
                     ],
                 ],
             ],
@@ -336,19 +336,22 @@ class ConfigurationTest extends TestCase
                 'junit'                          => '/tmp/logfile.xml',
                 'testdox-html'                   => '/tmp/testdox.html',
                 'testdox-text'                   => '/tmp/testdox.txt',
-                'testdox-xml'                    => '/tmp/testdox.xml'
+                'testdox-xml'                    => '/tmp/testdox.xml',
             ],
             $this->configuration->getLoggingConfiguration()
         );
     }
 
+    /**
+     * @testdox PHP configuration is read correctly
+     */
     public function testPHPConfigurationIsReadCorrectly(): void
     {
         $this->assertEquals(
             [
                 'include_path' => [
                     TEST_FILES_PATH . '.',
-                    '/path/to/lib'
+                    '/path/to/lib',
                 ],
                 'ini'    => ['foo' => ['value' => 'bar'], 'highlight.keyword' => ['value' => '#123456'], 'highlight.string' => ['value' => 'TEST_FILES_PATH']],
                 'const'  => ['FOO' => ['value' => false], 'BAR' => ['value' => true]],
@@ -366,6 +369,7 @@ class ConfigurationTest extends TestCase
     }
 
     /**
+     * @testdox PHP configuration is handled correctly
      * @backupGlobals enabled
      */
     public function testPHPConfigurationIsHandledCorrectly(): void
@@ -396,11 +400,12 @@ class ConfigurationTest extends TestCase
     }
 
     /**
+     * @testdox handlePHPConfiguration() does not overwrite existing $ENV[] variables
      * @backupGlobals enabled
      *
      * @see https://github.com/sebastianbergmann/phpunit/issues/1181
      */
-    public function testHandlePHPConfigurationDoesNotOverwrittenExistingEnvArrayVariables(): void
+    public function testHandlePHPConfigurationDoesNotOverwriteExistingEnvArrayVariables(): void
     {
         $_ENV['foo'] = false;
         $this->configuration->handlePHPConfiguration();
@@ -410,6 +415,7 @@ class ConfigurationTest extends TestCase
     }
 
     /**
+     * @testdox handlePHPConfiguration() does force overwritten existing $ENV[] variables
      * @backupGlobals enabled
      *
      * @see https://github.com/sebastianbergmann/phpunit/issues/2353
@@ -424,20 +430,30 @@ class ConfigurationTest extends TestCase
     }
 
     /**
+     * @testdox handlePHPConfiguration() does not overwrite variables from putenv()
      * @backupGlobals enabled
      *
      * @see https://github.com/sebastianbergmann/phpunit/issues/1181
      */
-    public function testHandlePHPConfigurationDoesNotOverriteVariablesFromPutEnv(): void
+    public function testHandlePHPConfigurationDoesNotOverwriteVariablesFromPutEnv(): void
     {
+        $backupFoo = \getenv('foo');
+
         \putenv('foo=putenv');
         $this->configuration->handlePHPConfiguration();
 
         $this->assertEquals('putenv', $_ENV['foo']);
         $this->assertEquals('putenv', \getenv('foo'));
+
+        if ($backupFoo === false) {
+            \putenv('foo');     // delete variable from environment
+        } else {
+            \putenv("foo=$backupFoo");
+        }
     }
 
     /**
+     * @testdox handlePHPConfiguration() does overwrite variables from putenv() when forced
      * @backupGlobals enabled
      *
      * @see https://github.com/sebastianbergmann/phpunit/issues/1181
@@ -451,6 +467,9 @@ class ConfigurationTest extends TestCase
         $this->assertEquals('forced', \getenv('foo_force'));
     }
 
+    /**
+     * @testdox PHPUnit configuration is read correctly
+     */
     public function testPHPUnitConfigurationIsReadCorrectly(): void
     {
         $this->assertEquals(
@@ -473,6 +492,7 @@ class ConfigurationTest extends TestCase
                 'reportUselessTests'                         => false,
                 'strictCoverage'                             => false,
                 'disallowTestOutput'                         => false,
+                'defaultTimeLimit'                           => 123,
                 'enforceTimeLimit'                           => false,
                 'extensionsDirectory'                        => '/tmp',
                 'printerClass'                               => 'PHPUnit\TextUI\ResultPrinter',
@@ -490,6 +510,7 @@ class ConfigurationTest extends TestCase
                 'executionOrder'                             => TestSuiteSorter::ORDER_DEFAULT,
                 'executionOrderDefects'                      => TestSuiteSorter::ORDER_DEFAULT,
                 'resolveDependencies'                        => false,
+                'noInteraction'                              => true,
             ],
             $this->configuration->getPHPUnitConfiguration()
         );
@@ -558,6 +579,29 @@ class ConfigurationTest extends TestCase
         $tests  = $config->tests();
 
         $this->assertCount(1, $tests);
+    }
+
+    public function test_TestDox_configuration_is_parsed_correctly(): void
+    {
+        $configuration = Configuration::getInstance(
+            TEST_FILES_PATH . 'configuration_testdox.xml'
+        );
+
+        $config = $configuration->getPHPUnitConfiguration();
+
+        $this->assertSame(CliTestDoxPrinter::class, $config['printerClass']);
+    }
+
+    public function test_Conflict_between_testdox_and_printerClass_is_detected(): void
+    {
+        $configuration = Configuration::getInstance(
+            TEST_FILES_PATH . 'configuration_testdox_printerClass.xml'
+        );
+
+        $config = $configuration->getPHPUnitConfiguration();
+
+        $this->assertSame('foo', $config['printerClass']);
+        $this->assertTrue($config['conflictBetweenPrinterClassAndTestdox']);
     }
 
     /**

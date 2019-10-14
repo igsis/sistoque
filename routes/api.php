@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Http\Request;
-use sitoque\Models\Produto;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,7 +17,15 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/produto', function(){
-    $produto = Produto::all();
-    return json_encode($produto);
-});
+//Puxa as categorias cadastradas
+Route::get('/categorias', 'CategoriaController@indexJson')->name('api.listarCategorias');
+
+//Puxa as subcategorias cadastradas baseada na categoria
+Route::get('/subcategoria/{categoria}', 'SubcategoriaController@indexJson')->name('api.listarSubcategoria');
+
+//Puxa as tipo de quantida
+Route::get('/tipoQuantidade', 'TipoCategoriaController@indexJson')->name('api.listarTipoCategoria');
+
+
+//Faz toda parte de crud de produtos
+Route::resource('/produtos', 'ProdutoController');

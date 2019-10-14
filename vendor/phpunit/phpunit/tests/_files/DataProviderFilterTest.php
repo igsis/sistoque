@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -17,7 +17,7 @@ class DataProviderFilterTest extends TestCase
             [true],
             [true],
             [true],
-            [true]
+            [true],
         ];
     }
 
@@ -27,7 +27,7 @@ class DataProviderFilterTest extends TestCase
             'false test'       => [false],
             'false test 2'     => [false],
             'other false test' => [false],
-            'other false test2'=> [false]
+            'other false test2'=> [false],
         ];
     }
 

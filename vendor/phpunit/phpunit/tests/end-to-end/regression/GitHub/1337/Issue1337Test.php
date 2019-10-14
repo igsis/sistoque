@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -23,7 +23,7 @@ class Issue1337Test extends TestCase
     {
         return [
             'c:\\'=> [true],
-            0.9   => [true]
+            0.9   => [true],
         ];
     }
 }

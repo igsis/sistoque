@@ -1,56 +1,127 @@
 <?php
 
-namespace sitoque\Http\Controllers;
+namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use sitoque\Models\Categoria;
-use sitoque\Models\Produto;
-use sitoque\Models\Subcategoria;
-use sitoque\Models\TipoQuantidade;
+use App\Models\Produto;
 
 class ProdutoController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
-        $produtos = Produto::all();
-        return view('produto.listar', compact('produtos'));
+        $prods = Produto::where('publicado','=',1)->get();
+
+        return view('produto.index',compact('prods'));
     }
 
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function create()
     {
-        $categorias = Categoria::orderBy('nome')->get();
-        $subcategorias = Subcategoria::orderBy('sub_categoria')->get();
-        $tipoQuantidades = TipoQuantidade::all();
-
-        return view('produto.cadastro', compact('categorias', 'subcategorias', 'tipoQuantidades'));
+        //
     }
 
-    //    public function getSubcategoria($idCategoria)
-//    {
-//        $subcategorias = Subcategoria::where("categoria_produtos_id", $idCategoria);
-//        return Response::json($subcategorias);
-//    }
-
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'descricao' => 'required',
-            'categoria' => 'required',
-            'subcategoria' => 'required',
-            'quantidade' => 'required',
-            'tipoQuantidade' => 'required',
-            'nivelEmergencia' => 'required'
-        ]);
+        $prod = new Produto();
 
-        $produtos = new Produto();
-        $produtos->descricao = $request->descricao;
-        $produtos->categoria_produtos_id = $request->categoria;
-        $produtos->subcategoria_produtos_id = $request->subcategoria;
-        $produtos->quantidade = $request->quantidade;
-        $produtos->tipo_quantidades_id = $request->tipoQuantidade;
-        $produtos->nivel_emergencia = $request->nivelEmergencia;
-        $produtos->save();
+        $prod->nome = $request->nome;
+        $prod->quantidade = $request->quantidade;
+        $prod->nivel_emergencia = $request->nivel_emergencia;
+        $prod->categoria_produtos_id = $request->categoria_produtos_id;
+        $prod->subcategoria_produtos_id = $request->subcategoria_produtos_id;
+        $prod->tipo_quantidades_id = $request->tipo_quantidade_id;
 
-        return redirect()->back() ->with('flash_message','Inserido com sucesso');
+       $prod->save();
+
+       return json_encode($prod);
+
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $prod = Produto::find($id);
+        if (isset($prod)){
+            return json_encode($prod);
+        }
+
+        return response ('Produto não encontrado', 404);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        $prod = Produto::find($id);
+        if(isset($prod)){
+            $prod->nome = $request->nome;
+            $prod->quantidade = $request->quantidade;
+            $prod->nivel_emergencia = $request->nivel_emergencia;
+            $prod->categoria_produtos_id = $request->categoria_produtos_id;
+            $prod->subcategoria_produtos_id = $request->subcategoria_produtos_id;
+            $prod->tipo_quantidades_id = $request->tipo_quantidade_id;
+
+            $prod->save();
+
+            return json_encode($prod);
+        }
+
+
+        return response('Produto não encontrado', 404);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $prod = Produto::find($id);
+
+        if (isset($prod)){
+            $prod->publicado = 0;
+            $prod->save();
+
+            return response('Apagado', 200);
+        }
+        return  response('Produto não encontrado', 404);
     }
 }

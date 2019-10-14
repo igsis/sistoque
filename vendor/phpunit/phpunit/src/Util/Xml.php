@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -17,8 +17,16 @@ use DOMText;
 use PHPUnit\Framework\Exception;
 use ReflectionClass;
 
+/**
+ * @internal This class is not covered by the backward compatibility promise for PHPUnit
+ */
 final class Xml
 {
+    public static function import(DOMElement $element): DOMElement
+    {
+        return (new DOMDocument)->importNode($element, true);
+    }
+
     /**
      * Load an $actual document into a DOMDocument.  This is called
      * from the selector assertions.
@@ -211,8 +219,15 @@ final class Xml
                         }
                     }
 
-                    $class    = new ReflectionClass($className);
-                    $variable = $class->newInstanceArgs($constructorArgs);
+                    try {
+                        $variable = (new ReflectionClass($className))->newInstanceArgs($constructorArgs);
+                    } catch (\ReflectionException $e) {
+                        throw new Exception(
+                            $e->getMessage(),
+                            (int) $e->getCode(),
+                            $e
+                        );
+                    }
                 } else {
                     $variable = new $className;
                 }
