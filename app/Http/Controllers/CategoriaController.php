@@ -37,7 +37,16 @@ class CategoriaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $cat =  new Categoria();
+
+        $cat->nome = $request->input('nome');
+        $cat->save();
+
+        if (isset($cat)){
+            return json_encode($cat);
+        }
+
+        return response('Não foi possivel cadastrar Categoria', 500);
     }
 
     /**
@@ -48,7 +57,13 @@ class CategoriaController extends Controller
      */
     public function show($id)
     {
-        //
+        $cat =  Categoria::find($id);
+
+        if (isset($cat)){
+            return json_encode($cat);
+        }
+
+        return response('Categoria não encontrada',404);
     }
 
     /**
@@ -59,7 +74,7 @@ class CategoriaController extends Controller
      */
     public function edit($id)
     {
-        //
+
     }
 
     /**
@@ -71,7 +86,18 @@ class CategoriaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $cat = Categoria::find($id);
+
+        if (isset($cat)){
+            $cat->nome = $request->input('nome');
+            $cat->save();
+
+            return json_encode($cat);
+
+        }
+
+        return response('Categoria não encontrada',404);
+
     }
 
     /**
@@ -82,7 +108,16 @@ class CategoriaController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $cat = Categoria::find($id);
+
+        if (isset($cat)){
+            $cat->publicado = 0;
+            $cat->save();
+
+            return response('Apagado', 200);
+        }
+
+        return response('Categoria não encontrada',404);
     }
 
     public function indexJson(){

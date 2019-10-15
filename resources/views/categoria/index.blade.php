@@ -7,10 +7,10 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-9">
-                        <h1 class="m-0 text-dark">Produtos</h1>
+                        <h1 class="m-0 text-dark">Categorias</h1>
                     </div><!-- /.col -->
                     <div class="col-sm-3">
-                        <button href="" class="btn btn-success btn-block" onclick="novoProduto()">Adicionar</button>
+                        <button href="" class="btn btn-success btn-block" onclick="novaCategoria()">Adicionar</button>
                     </div><!-- /.col -->
                 </div><!-- /.row -->
             </div><!-- /.container-fluid -->
@@ -25,7 +25,7 @@
                         <!-- Horizontal Form -->
                         <div class="card card-primary">
                             <div class="card-header">
-                                <h3 class="card-title">Produtos Cadastrados</h3>
+                                <h3 class="card-title">Categorias Cadastradas</h3>
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body table-responsive">
@@ -75,50 +75,23 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="formProduto" tabindex="-1" role="dialog" aria-labelledby="ModalFormularioProduto"
+    <div class="modal fade" id="modalCategoria" tabindex="-1" role="dialog" aria-labelledby="ModalFormularioCategorias"
          aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="ModalFormularioProduto"></h5>
+                    <h5 class="modal-title" id="ModalFormularioCategorias"></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="frmProduto">
+                <form id="frmCategoria">
                     <div class="modal-body">
                         <input type="hidden" id="id">
                         <div class="form-group">
                             <label for="nome">Nome:</label>
                             <input type="text" class="form-control" id="nome" maxlength="50"
-                                   placeholder="Nome de Produto" required>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-6">
-                                <label for="quantidade">Quantidade:</label>
-                                <input type="number" class="form-control" id="quantidade"
-                                       maxlength="50" placeholder="Ex: 100" required>
-                            </div>
-                            <div class="form-group col-6">
-                                <label for="nvEmergencia">Nível de Emergência:</label>
-                                <input type="number" class="form-control" id="nvEmergencia"
-                                       placeholder="Ex: 10" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="categoriaProduto">Categoria:</label>
-                            <select class="form-control" id="categoriaProduto" required>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="subcategoria">Subcategoria:</label>
-                            <select class="form-control" id="subcategoria" required>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="tipocategoria">Tipo Quantidade:</label>
-                            <select class="form-control" id="tipoQuantidade" required>
-                            </select>
+                                   placeholder="Nome da Categoria" required>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -132,7 +105,9 @@
 @stop
 
 @section('scriptPlus')
-    {{--    <script src="{{asset('bower_components/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.js')}}"></script>--}}
+{{--    <script src="{{asset('bower_components/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.js')}}"></script>--}}
+    <script src="{{ asset('bower_components/admin-lte/dist/js/demo.js') }}"></script>
+    <script src="{{ asset('bower_components/admin-lte/dist/js/adminlte.min.js') }}"></script>
     <script src="{{asset('bower_components/admin-lte/plugins/datatables/jquery.dataTables.js')}}"></script>
     <script type="text/javascript">
 
@@ -143,6 +118,140 @@
                 'X-CSRF-TOKEN': "{{csrf_token()}}"
             }
         });
+
+        function tituloModal(tipo) {
+            $('#modalCategoria').find('.modal-title').text(tipo + ' de Categoria')
+        }
+
+        function novaCategoria() {
+            // Coloca titulo da ação no modal
+            tituloModal('Cadastro')
+
+            // zera todos os valores form
+            $('#id').val('')
+            $('#nome').val('')
+
+            // exibe o modal
+            $("#modalCategoria").modal('show')
+        }
+
+        function cadastroCategoria() {
+            var cat = {
+                nome: $('#nome').val()
+            };
+
+            $.ajax({
+                data: cat,
+                url: "/api/categorias",
+                type: "POST",
+                dataType: 'json',
+                success: function (data) {
+                    let categoria = jQuery.parseJSON(JSON.stringify(data));
+
+                    let linha = "<tr>" +
+                        "<td>" + categoria.id + "</td>" +
+                        "<td>" + categoria.nome + "</td>" +
+                        "<td>" +
+                        "<button class='btn btn-sm btn-primary' onclick='editar(" + categoria.id + ")'>" +
+                        "<i class='fas fa-edit'></i> Editar" +
+                        "</button>" +
+                        "<button class='btn btn-sm btn-danger' onclick='apagar(" + categoria.id + ")'>" +
+                        "<i class='fas fa-trash'></i> Apagar" +
+                        "</button>" +
+                        "</td>" +
+                        "</tr>"
+                    if ($('.dataTables_empty').length) {
+                        let pai = $('.dataTables_empty').closest('.odd')
+                        pai.remove();
+                    }
+                    $('#tabela>tbody').append(linha)
+
+                },
+                error: function (data) {
+                    console.log('Error:', data);
+                }
+            });
+        }
+
+        function editar(id) {
+            tituloModal('Editação')
+            $.getJSON('/api/categorias/'+id, function (data) {
+
+                $('#id').val(data.id)
+                $('#nome').val(data.nome)
+
+                $('#modalCategoria').modal('show');
+            })
+
+        }
+
+        function apagar(id){
+            $.ajax({
+                type: 'DELETE',
+                url: "/api/categorias/" + id,
+                context: this,
+                success: function () {
+                    console.log('Apagado com sucesso');
+                    let linhas = $('#tabela>tbody>tr');
+
+                    e = linhas.filter(function (i, elemento) {
+                        return elemento.cells[0].textContent == id;
+                    });
+                    if (e)
+                        e.remove();
+                },
+                error: function (error) {
+                    console.error(error)
+                }
+
+            })
+        }
+
+        function editarCategoria() {
+            var cat = {
+                id: $('#id').val(),
+                nome: $('#nome').val()
+            };
+            $.ajax({
+                data: cat,
+                url: "/api/categorias/"+cat.id,
+                type: "PUT",
+                context: this,
+                success: function (data) {
+                    cat = JSON.parse(data);
+                    linhas = $('#tabela>tbody>tr');
+                    e =linhas.filter(function (i, elemento) {
+                        return (elemento.cells[0].textContent == cat.id);
+                    });
+                    try {
+                        if(e){
+                            e[0].cells[0].textContent = cat.id;
+                            e[0].cells[1].textContent = cat.nome;
+                        }
+                    }catch (error) {
+                        console.error("Error: "+ error)
+                        console.log(e.cells)
+                    }
+
+
+                },
+                error: function (data) {
+                    console.log('Error:', data);
+                }
+            });
+        }
+
+        $('#frmCategoria').submit(function (event) {
+            event.preventDefault()
+            if ($('#id').val() != '') {
+                editarCategoria()
+            } else {
+                cadastroCategoria()
+            }
+
+            $("#modalCategoria").modal('hide')
+
+        })
 
         $(function () {
 

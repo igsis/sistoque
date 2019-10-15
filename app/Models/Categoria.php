@@ -10,7 +10,7 @@ class Categoria extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['nome'];
+    protected $fillable = ['nome','publicado'];
 
     public function subcategoria()
     {

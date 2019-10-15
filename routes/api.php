@@ -29,3 +29,15 @@ Route::get('/tipoQuantidade', 'TipoCategoriaController@indexJson')->name('api.li
 
 //Faz toda parte de crud de produtos
 Route::resource('/produtos', 'ProdutoController');
+
+
+//Faz parte de crud de categorias
+Route::group(['prefix' => 'categorias'], function () {
+
+    Route::post('/', "CategoriaController@store")->name('api.cadatroCategoria');
+    Route::delete('/{id}', 'CategoriaController@destroy')->name('api.deletarCategoria');
+    Route::get('/{id}', 'CategoriaController@show')->name('api.editarCategoria');
+    Route::put('/{id}', 'CategoriaController@update')->name('api.editarCategoria');
+
+
+});

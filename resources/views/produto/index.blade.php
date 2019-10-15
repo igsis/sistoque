@@ -154,7 +154,7 @@
         });
 
         function tituloModal(tipo) {
-            $('#formProduto').find('.modal-title').text(tipo + ' Produto')
+            $('#formProduto').find('.modal-title').text(tipo + ' de Produto')
         }
 
         function novoProduto() {
@@ -175,6 +175,7 @@
         }
 
         function editar(id) {
+            tituloModal('Editação')
             $.getJSON('/api/produtos/'+id, function (data) {
 
                 $('#id').val(data.id)
