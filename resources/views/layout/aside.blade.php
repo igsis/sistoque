@@ -33,10 +33,23 @@
                         <p>Pedidos</p>
                     </a>
                 </li>
+                <li class="nav-header">Gerencial</li>
                 <li class="nav-item">
                     <a href="{{ route('produtos') }}" class="nav-link">
-                        <i class="nav-icon fas fa-box-open"></i>
+                        <i class="nav-icon fas fa-dolly"></i>
                         <p>Produtos</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('categorias') }}" class="nav-link">
+                        <i class="nav-icon fas fa-cube"></i>
+                        <p>Categoria</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('subcategoria') }}" class="nav-link">
+                        <i class="nav-icon fas fa-cubes"></i>
+                        <p>Subcategoria</p>
                     </a>
                 </li>
                 <li class="nav-header">Conta</li>
@@ -62,6 +75,12 @@
                             </a>
                         </li>
                     </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="" class="nav-link">
+                        <i class="nav-icon fas fa-sign-out-alt"></i>
+                        <p>Sair</p>
+                    </a>
                 </li>
             </ul>
         </nav>

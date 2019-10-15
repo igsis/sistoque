@@ -15,4 +15,11 @@ Route::get('/', function () {
     return view('index');
 });
 
+//Rota de produtos
 Route::get('/produtos', 'ProdutoController@index')->name('produtos');
+
+//Rota de Categorias
+Route::get('/categorias', 'CategoriaController@index')->name('categorias');
+
+//Rota de Subcategorias
+Route::get('/subcategorias', 'SubcategoriaController@index')->name('subcategoria');

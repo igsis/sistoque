@@ -14,7 +14,9 @@ class SubcategoriaController extends Controller
      */
     public function index()
     {
-        //
+        $subs =  Subcategoria::where('publicado',1)->get();
+
+        return view('subcategoria.index',compact('subs'));
     }
 
     /**

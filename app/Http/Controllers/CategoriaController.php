@@ -14,7 +14,9 @@ class CategoriaController extends Controller
      */
     public function index()
     {
-        //
+        $cats = Categoria::where('publicado',1)->get();
+
+        return view('categoria.index', compact('cats'));
     }
 
     /**
@@ -84,7 +86,7 @@ class CategoriaController extends Controller
     }
 
     public function indexJson(){
-        $cats = Categoria::all();
+        $cats = Categoria::where('publicado',1)->get();
         return json_encode($cats);
     }
 }
