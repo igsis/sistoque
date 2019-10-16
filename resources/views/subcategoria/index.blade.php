@@ -169,7 +169,7 @@
                     let linha = "<tr>" +
                         "<td>" + subcategoria.id + "</td>" +
                         "<td>" + subcategoria.nome + "</td>" +
-                        "<td>" + subcategoria.categoria_produtos_id + "</td>" +
+                        "<td>" + $('#categoria option:selected').text() + "</td>" +
                         "<td>" +
                         "<button class='btn btn-sm btn-primary' onclick='editar(" + subcategoria.id + ")'>" +
                         "<i class='fas fa-edit'></i> Editar" +
@@ -194,7 +194,7 @@
 
         function editar(id) {
             tituloModal('Editação')
-            $.getJSON('/api/subcategorias/'+id, function (data) {
+            $.getJSON("http://{{$_SERVER['HTTP_HOST']}}/sitoque/api/subcategorias/"+id, function (data) {
 
                 $('#id').val(data.id)
                 $('#nome').val(data.nome)
@@ -208,7 +208,7 @@
         function apagar(id){
             $.ajax({
                 type: 'DELETE',
-                url: "/api/subcategorias/" + id,
+                url: "http://{{$_SERVER['HTTP_HOST']}}/sitoque/api/subcategorias/" + id,
                 context: this,
                 success: function () {
                     console.log('Apagado com sucesso');
@@ -235,7 +235,7 @@
             };
             $.ajax({
                 data: sub,
-                url: "/api/subcategorias/"+sub.id,
+                url: "http://{{$_SERVER['HTTP_HOST']}}/sitoque/api/subcategorias/"+sub.id,
                 type: "PUT",
                 context: this,
                 success: function (data) {
@@ -248,7 +248,7 @@
                         if(e){
                             e[0].cells[0].textContent = sub.id;
                             e[0].cells[1].textContent = sub.nome;
-                            e[0].cells[2].textContent = sub.categoria_produtos_id;
+                            e[0].cells[2].textContent = $('#categoria option:selected').text();
                         }
                     }catch (error) {
                         console.error("Error: "+ error)

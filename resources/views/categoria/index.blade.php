@@ -142,7 +142,7 @@
 
             $.ajax({
                 data: cat,
-                url: "/api/categorias",
+                url: "http://{{$_SERVER['HTTP_HOST']}}/sitoque/api/categorias",
                 type: "POST",
                 dataType: 'json',
                 success: function (data) {
@@ -175,7 +175,7 @@
 
         function editar(id) {
             tituloModal('Editação')
-            $.getJSON('/api/categorias/'+id, function (data) {
+            $.getJSON("http://{{$_SERVER['HTTP_HOST']}}/sitoque/api/categorias/"+id, function (data) {
 
                 $('#id').val(data.id)
                 $('#nome').val(data.nome)
@@ -188,7 +188,7 @@
         function apagar(id){
             $.ajax({
                 type: 'DELETE',
-                url: "/api/categorias/" + id,
+                url: "http://{{$_SERVER['HTTP_HOST']}}/sitoque/api/categorias/" + id,
                 context: this,
                 success: function () {
                     console.log('Apagado com sucesso');
@@ -214,7 +214,7 @@
             };
             $.ajax({
                 data: cat,
-                url: "/api/categorias/"+cat.id,
+                url: "http://{{$_SERVER['HTTP_HOST']}}/sitoque/api/categorias/"+cat.id,
                 type: "PUT",
                 context: this,
                 success: function (data) {

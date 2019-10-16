@@ -176,7 +176,7 @@
 
         function editar(id) {
             tituloModal('Editação')
-            $.getJSON('/api/produtos/'+id, function (data) {
+            $.getJSON("http://{{$_SERVER['HTTP_HOST']}}/sitoque/api/produtos/"+id, function (data) {
 
                 $('#id').val(data.id)
                 $('#nome').val(data.nome)
@@ -242,7 +242,7 @@
 
             $.ajax({
                 data: prod,
-                url: "/api/produtos",
+                url: "http://{{$_SERVER['HTTP_HOST']}}/sitoque/api/produtos",
                 type: "POST",
                 dataType: 'json',
                 success: function (data) {
@@ -251,8 +251,8 @@
                     let linha = "<tr>" +
                         "<td>" + produto.id + "</td>" +
                         "<td>" + produto.nome + "</td>" +
-                        "<td>" + produto.categoria_produtos_id + "</td>" +
-                        "<td>" + produto.subcategoria_produtos_id + "</td>" +
+                        "<td>" + $('#categoriaProduto option:selected').text() + "</td>" +
+                        "<td>" + $('#subcategoria option:selected').text() + "</td>" +
                         "<td>" + produto.quantidade + "</td>" +
                         "<td>" +
                         "<button class='btn btn-sm btn-primary' onclick='editar("+ produto.id +")'>" +
@@ -291,7 +291,7 @@
             console.log('Entrou na função \n'+ prod)
             $.ajax({
                 data: prod,
-                url: "/api/produtos/"+prod.id,
+                url: "http://{{$_SERVER['HTTP_HOST']}}/sitoque/api/produtos/"+prod.id,
                 type: "PUT",
                 context: this,
                 success: function (data) {
@@ -304,8 +304,8 @@
                         if(e){
                             e[0].cells[0].textContent = prod.id;
                             e[0].cells[1].textContent = prod.nome;
-                            e[0].cells[2].textContent = prod.categoria_produtos_id;
-                            e[0].cells[3].textContent = prod.subcategoria_produtos_id;
+                            e[0].cells[2].textContent = $('#categoriaProduto option:selected').text();
+                            e[0].cells[3].textContent = $('#subcategoria option:selected').text();
                             e[0].cells[4].textContent = prod.quantidade;
                         }
                     }catch (error) {
@@ -324,7 +324,7 @@
         function apagar(id){
             $.ajax({
                 type: 'DELETE',
-                url: "/api/produtos/" + id,
+                url: "http://{{$_SERVER['HTTP_HOST']}}/sitoque/api/produtos/" + id,
                 context: this,
                 success: function () {
                     console.log('Apagado com sucesso');

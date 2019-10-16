@@ -110,9 +110,7 @@ class SubcategoriaController extends Controller
 
         if (isset($sub)){
             $sub->publicado = 0;
-
             $sub->save();
-
             return response("Apagado com sucesso",200);
         }
 
