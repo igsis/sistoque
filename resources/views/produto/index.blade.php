@@ -269,6 +269,15 @@
                     }
                     $('#tabela>tbody').append(linha)
 
+                    Swal.fire({
+                        type: 'success',
+                        title: 'Produto adicionado com sucesso!',
+                        backdrop: ` rgba(0,0,123,0.4)
+                                url("https://media.giphy.com/media/7lsw8RenVcjCM/giphy.gif")
+                                center right
+                                no-repeat`
+                    })
+
                 },
                 error: function (data) {
                     console.log('Error:', data);
@@ -288,7 +297,6 @@
                 subcategoria_produtos_id: $('#subcategoria').val(),
                 tipo_quantidade_id: $('#tipoQuantidade').val()
             };
-            console.log('Entrou na função \n'+ prod)
             $.ajax({
                 data: prod,
                 url: "http://{{$_SERVER['HTTP_HOST']}}/sitoque/api/produtos/"+prod.id,
@@ -308,6 +316,15 @@
                             e[0].cells[3].textContent = $('#subcategoria option:selected').text();
                             e[0].cells[4].textContent = prod.quantidade;
                         }
+
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Produto alterado com sucesso!',
+                            backdrop: ` rgba(0,0,123,0.4)
+                                url("https://media.giphy.com/media/7lsw8RenVcjCM/giphy.gif")
+                                center right
+                                no-repeat`
+                        })
                     }catch (error) {
                         console.error("Error: "+ error)
                         console.log(e.cells)
@@ -335,6 +352,15 @@
                     });
                     if (e)
                         e.remove();
+
+                    Swal.fire({
+                        type: 'success',
+                        title: 'Produto apagado com sucesso!',
+                        backdrop: ` rgba(0,0,123,0.4)
+                                url("https://media.giphy.com/media/7lsw8RenVcjCM/giphy.gif")
+                                center right
+                                no-repeat`
+                    })
                 },
                 error: function (error) {
                     console.error(error)
@@ -401,4 +427,5 @@
     </style>
     <link rel="stylesheet"
           href="{{asset('bower_components/admin-lte/plugins/datatables-bs4/css/dataTables.bootstrap4.css')}}">
+    <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 @stop

@@ -185,6 +185,15 @@
                     }
                     $('#tabela>tbody').append(linha)
 
+                    Swal.fire({
+                        type: 'success',
+                        title: 'Subcategoria adicionado com sucesso!',
+                        backdrop: ` rgba(0,0,123,0.4)
+                                url("https://media.giphy.com/media/7lsw8RenVcjCM/giphy.gif")
+                                center right
+                                no-repeat`
+                    })
+
                 },
                 error: function (data) {
                     console.log('Error:', data);
@@ -219,6 +228,15 @@
                     });
                     if (e)
                         e.remove();
+
+                    Swal.fire({
+                        type: 'success',
+                        title: 'Subcategoria apagada com sucesso!',
+                        backdrop: ` rgba(0,0,123,0.4)
+                                url("https://media.giphy.com/media/7lsw8RenVcjCM/giphy.gif")
+                                center right
+                                no-repeat`
+                    })
                 },
                 error: function (error) {
                     console.error(error)
