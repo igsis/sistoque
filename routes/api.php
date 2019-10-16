@@ -41,3 +41,14 @@ Route::group(['prefix' => 'categorias'], function () {
 
 
 });
+
+Route::group(['prefix' => 'subcategorias'], function () {
+
+    Route::post('/', "SubcategoriaController@store")->name('api.cadatroSubcategoria');
+    Route::delete('/{id}', 'SubcategoriaController@destroy')->name('api.deletarSubcategoria');
+    Route::get('/{id}', 'SubcategoriaController@show')->name('api.editarSubcategoria');
+    Route::put('/{id}', 'SubcategoriaController@update')->name('api.editarSubcategoria');
+
+
+});
+

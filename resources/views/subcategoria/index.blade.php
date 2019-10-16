@@ -7,10 +7,10 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-9">
-                        <h1 class="m-0 text-dark">Produtos</h1>
+                        <h1 class="m-0 text-dark">Subcategorias</h1>
                     </div><!-- /.col -->
                     <div class="col-sm-3">
-                        <button href="" class="btn btn-success btn-block" onclick="novoProduto()">Adicionar</button>
+                        <button href="" class="btn btn-success btn-block" onclick="novaSubcategoria()">Adicionar</button>
                     </div><!-- /.col -->
                 </div><!-- /.row -->
             </div><!-- /.container-fluid -->
@@ -25,15 +25,16 @@
                         <!-- Horizontal Form -->
                         <div class="card card-primary">
                             <div class="card-header">
-                                <h3 class="card-title">Produtos Cadastrados</h3>
+                                <h3 class="card-title">Subcategorias Cadastradas</h3>
                             </div>
                             <!-- /.card-header -->
-                            <div class="card-body table-responsive">
+                            <div class="card-body">
                                 <table id="tabela" class="table table-bordered table-striped">
                                     <thead>
                                     <tr>
                                         <th>ID</th>
                                         <th width="25%">Nome</th>
+                                        <th>Categoria</th>
                                         <th>Ação</th>
                                     </tr>
                                     </thead>
@@ -42,6 +43,7 @@
                                         <tr>
                                             <td>{{ $sub->id }}</td>
                                             <td>{{ $sub->nome }}</td>
+                                            <td>{{ $sub->categoria->nome }}</td>
                                             <td>
                                                 <button class="btn btn-sm btn-primary" onclick="editar({{ $sub->id }})">
                                                     <i class="fas fa-edit"></i> Editar
@@ -57,6 +59,7 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Nome</th>
+                                        <th>Categoria</th>
                                         <th>Ação</th>
                                     </tr>
                                     </tfoot>
@@ -75,7 +78,7 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="formProduto" tabindex="-1" role="dialog" aria-labelledby="ModalFormularioProduto"
+    <div class="modal fade" id="modalSubCategoria" tabindex="-1" role="dialog" aria-labelledby="ModalFormularioProduto"
          aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -85,39 +88,17 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="frmProduto">
+                <form id="frmSubcategoria">
                     <div class="modal-body">
                         <input type="hidden" id="id">
                         <div class="form-group">
                             <label for="nome">Nome:</label>
                             <input type="text" class="form-control" id="nome" maxlength="50"
-                                   placeholder="Nome de Produto" required>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-6">
-                                <label for="quantidade">Quantidade:</label>
-                                <input type="number" class="form-control" id="quantidade"
-                                       maxlength="50" placeholder="Ex: 100" required>
-                            </div>
-                            <div class="form-group col-6">
-                                <label for="nvEmergencia">Nível de Emergência:</label>
-                                <input type="number" class="form-control" id="nvEmergencia"
-                                       placeholder="Ex: 10" required>
-                            </div>
+                                   placeholder="Nome da subcategoria" required>
                         </div>
                         <div class="form-group">
                             <label for="categoriaProduto">Categoria:</label>
-                            <select class="form-control" id="categoriaProduto" required>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="subcategoria">Subcategoria:</label>
-                            <select class="form-control" id="subcategoria" required>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="tipocategoria">Tipo Quantidade:</label>
-                            <select class="form-control" id="tipoQuantidade" required>
+                            <select class="form-control" id="categoria" required>
                             </select>
                         </div>
                     </div>
@@ -144,8 +125,160 @@
             }
         });
 
-        $(function () {
+        function carregarCategorias() {
+            $.getJSON('{{ route('api.listarCategorias') }}', function (data) {
+                for (i = 0; i < data.length; i++) {
+                    opcao = '<option value="' + data[i].id + '" >' + data[i].nome + '</option>';
 
+                    $('#categoria').append(opcao);
+                }
+            })
+        }
+
+        function tituloModal(tipo) {
+            $('#modalSubCategoria').find('.modal-title').text(tipo + ' de Subcategoria')
+        }
+
+        function novaSubcategoria() {
+            // Coloca titulo da ação no modal
+            tituloModal('Cadastro')
+
+            // zera todos os valores form
+            $('#id').val('')
+            $('#nome').val('')
+            $('#categoria').val('')
+
+            // exibe o modal
+            $("#modalSubCategoria").modal('show')
+        }
+
+        function cadastroSubcategoria() {
+            var sub = {
+                nome: $('#nome').val(),
+                categoria: $('#categoria').val()
+            };
+
+            $.ajax({
+                data: sub,
+                url: "{{ route('api.cadatroSubcategoria') }}",
+                type: "POST",
+                dataType: 'json',
+                success: function (data) {
+                    let subcategoria = jQuery.parseJSON(JSON.stringify(data));
+
+                    let linha = "<tr>" +
+                        "<td>" + subcategoria.id + "</td>" +
+                        "<td>" + subcategoria.nome + "</td>" +
+                        "<td>" + subcategoria.categoria_produtos_id + "</td>" +
+                        "<td>" +
+                        "<button class='btn btn-sm btn-primary' onclick='editar(" + subcategoria.id + ")'>" +
+                        "<i class='fas fa-edit'></i> Editar" +
+                        "</button>" +
+                        "<button class='btn btn-sm btn-danger' onclick='apagar(" + subcategoria.id + ")'>" +
+                        "<i class='fas fa-trash'></i> Apagar" +
+                        "</button>" +
+                        "</td>" +
+                        "</tr>"
+                    if ($('.dataTables_empty').length) {
+                        let pai = $('.dataTables_empty').closest('.odd')
+                        pai.remove();
+                    }
+                    $('#tabela>tbody').append(linha)
+
+                },
+                error: function (data) {
+                    console.log('Error:', data);
+                }
+            });
+        }
+
+        function editar(id) {
+            tituloModal('Editação')
+            $.getJSON('/api/subcategorias/'+id, function (data) {
+
+                $('#id').val(data.id)
+                $('#nome').val(data.nome)
+                $('#categoria').val(data.categoria_produtos_id)
+
+                $('#modalSubCategoria').modal('show');
+            })
+
+        }
+
+        function apagar(id){
+            $.ajax({
+                type: 'DELETE',
+                url: "/api/subcategorias/" + id,
+                context: this,
+                success: function () {
+                    console.log('Apagado com sucesso');
+                    let linhas = $('#tabela>tbody>tr');
+
+                    e = linhas.filter(function (i, elemento) {
+                        return elemento.cells[0].textContent == id;
+                    });
+                    if (e)
+                        e.remove();
+                },
+                error: function (error) {
+                    console.error(error)
+                }
+
+            })
+        }
+
+        function editarSubcategoria() {
+            var sub = {
+                id: $('#id').val(),
+                nome: $('#nome').val(),
+                categoria: $('#categoria').val()
+            };
+            $.ajax({
+                data: sub,
+                url: "/api/subcategorias/"+sub.id,
+                type: "PUT",
+                context: this,
+                success: function (data) {
+                    sub = JSON.parse(data);
+                    linhas = $('#tabela>tbody>tr');
+                    e =linhas.filter(function (i, elemento) {
+                        return (elemento.cells[0].textContent == sub.id);
+                    });
+                    try {
+                        if(e){
+                            e[0].cells[0].textContent = sub.id;
+                            e[0].cells[1].textContent = sub.nome;
+                            e[0].cells[2].textContent = sub.categoria_produtos_id;
+                        }
+                    }catch (error) {
+                        console.error("Error: "+ error)
+                        console.log(e.cells)
+                    }
+
+
+                },
+                error: function (data) {
+                    console.log('Error:', data);
+                }
+            });
+        }
+
+
+        $('#frmSubcategoria').submit(function (event) {
+            event.preventDefault()
+            if ($('#id').val() != '') {
+                editarSubcategoria()
+            } else {
+                cadastroSubcategoria()
+            }
+
+            $("#modalSubCategoria").modal('hide')
+
+        })
+
+
+        $(function () {
+            carregarCategorias()
             $('#tabela').DataTable({
                 "oLanguage": {
                     "sEmptyTable": "Não há registros cadastrados",

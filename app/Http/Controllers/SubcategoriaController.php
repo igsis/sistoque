@@ -37,7 +37,14 @@ class SubcategoriaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $sub =  new Subcategoria();
+
+        $sub->nome = $request->input('nome');
+        $sub->categoria_produtos_id = $request->input('categoria');
+
+        $sub->save();
+
+        return json_encode($sub);
     }
 
     /**
@@ -48,7 +55,13 @@ class SubcategoriaController extends Controller
      */
     public function show($id)
     {
-        //
+        $sub = Subcategoria::find($id);
+
+        if (isset($sub)){
+            return json_encode($sub);
+        }
+
+        return response('Subcategoria não encontrada',404);
     }
 
     /**
@@ -71,7 +84,18 @@ class SubcategoriaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $sub = Subcategoria::find($id);
+
+        if (isset($sub)){
+            $sub->nome = $request->input('nome');
+            $sub->categoria_produtos_id = $request->input('categoria');
+
+            $sub->save();
+
+            return json_encode($sub);
+        }
+
+        return response('Subcategoria não encontrada',404);
     }
 
     /**
@@ -82,7 +106,18 @@ class SubcategoriaController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $sub = Subcategoria::find($id);
+
+        if (isset($sub)){
+            $sub->publicado = 0;
+
+            $sub->save();
+
+            return response("Apagado com sucesso",200);
+        }
+
+        return response("Não foi possivel apagar",404);
+
     }
 
     public function indexJson($cat){
