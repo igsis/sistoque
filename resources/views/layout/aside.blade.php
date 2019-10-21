@@ -15,20 +15,13 @@
                 <!-- Add icons to the links using the .nav-icon class
                      with font-awesome or any other icon font library -->
                 <li class="nav-item">
-                    <a href="{{-- route('pedido.solicitar') --}}" class="nav-link">
+                    <a href="{{ route('home') }}" class="nav-link">
                         <i class="nav-icon fa fa-home"></i>
                         <p>Início</p>
                     </a>
                 </li>
-                <li class="nav-header">Menu</li>
                 <li class="nav-item">
-                    <a href="{{-- route('pedido.solicitar') --}}" class="nav-link">
-                        <i class="nav-icon fas fa-paper-plane"></i>
-                        <p>Solicitar Pedidio</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{-- route('pedidos') --}}" class="nav-link">
+                    <a href="{{ route('pedidos') }}" class="nav-link">
                         <i class="nav-icon fas fa-sticky-note"></i>
                         <p>Pedidos</p>
                     </a>

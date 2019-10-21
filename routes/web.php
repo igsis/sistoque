@@ -11,19 +11,30 @@
 |
 */
 
+
+//Rota da home
 Route::get('/', function () {
     return view('index');
-})->middleware('auth');
+})->middleware('auth')
+->name('home');
 
-//Rota de produtos
+//~~ Rota de produtos ~~
 Route::get('/produtos', 'ProdutoController@index')->name('produtos');
+//Fim Produtos
 
-//Rota de Categorias
+//~~ Rota de Categorias ~~
 Route::get('/categorias', 'CategoriaController@index')->name('categorias');
+//Fim Categorias
 
-//Rota de Subcategorias
+//~~ Rota de Subcategorias ~~
 Route::get('/subcategorias', 'SubcategoriaController@index')->name('subcategoria');
+//Fim Subcategorias
 
+//~~ Rota de Pedidos ~~
+Route::get('/pedidos', 'PedidoController@index')->name('pedidos');
+//Fim Pedidos
+
+//~~ Rotas de autenticação ~~
 Auth::routes();
 
 //Logout
@@ -32,3 +43,4 @@ Route::get('/logout', function (){
     Session::flush();
     return redirect("/login");
 })->name('logout');
+//Fim autenticação
