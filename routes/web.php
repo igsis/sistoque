@@ -13,7 +13,7 @@
 
 Route::get('/', function () {
     return view('index');
-});
+})->middleware('auth');
 
 //Rota de produtos
 Route::get('/produtos', 'ProdutoController@index')->name('produtos');
@@ -23,3 +23,12 @@ Route::get('/categorias', 'CategoriaController@index')->name('categorias');
 
 //Rota de Subcategorias
 Route::get('/subcategorias', 'SubcategoriaController@index')->name('subcategoria');
+
+Auth::routes();
+
+//Logout
+Route::get('/logout', function (){
+    Auth::logout();
+    Session::flush();
+    return redirect("/login");
+})->name('logout');

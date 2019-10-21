@@ -5,13 +5,13 @@
 
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
-
+    @auth
     {{--  menu superior   --}}
     @include('layout.navbar')
 
     {{--  menu lateral  --}}
     @include('layout.aside')
-
+    @endauth
     @yield('conteudo')
 
     {{--  footer  --}}
