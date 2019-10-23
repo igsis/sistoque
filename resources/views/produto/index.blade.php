@@ -221,7 +221,7 @@
         })
 
         function carregarSubcategoria(valu) {
-            $.getJSON('api/subcategoria/' + valu, function (data) {
+            $.getJSON('api/subcategorias/' + valu, function (data) {
                 for (let x = 0; x < data.length; x++) {
                     opcao = '<option value="' + data[x].id + '" >' + data[x].nome + '</option>';
 

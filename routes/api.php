@@ -17,37 +17,38 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-//Puxa as categorias cadastradas
-Route::get('/categorias', 'CategoriaController@indexJson')->name('api.listarCategorias');
-
-//Puxa as subcategorias cadastradas baseada na categoria
-Route::get('/subcategoria/{categoria}', 'SubcategoriaController@indexJson')->name('api.listarSubcategoria');
 
 //Puxa as tipo de quantida
-Route::get('/tipoQuantidade', 'TipoCategoriaController@indexJson')->name('api.listarTipoCategoria');
+Route::get('/tipoQuantidade', 'TipoCategoriaController@index')->name('api.listarTipoCategoria');
 
 
 //Faz toda parte de crud de produtos
-Route::resource('/produtos', 'ProdutoController');
+Route::resource('/produtos', 'ProdutoAjax');
 
 
 //Faz parte de crud de categorias
 Route::group(['prefix' => 'categorias'], function () {
 
-    Route::post('/', "CategoriaController@store")->name('api.cadatroCategoria');
-    Route::delete('/{id}', 'CategoriaController@destroy')->name('api.deletarCategoria');
-    Route::get('/{id}', 'CategoriaController@show')->name('api.editarCategoria');
-    Route::put('/{id}', 'CategoriaController@update')->name('api.editarCategoria');
+    //Puxa as categorias cadastradas
+    Route::get('/', 'CategoriaAjax@index')->name('api.listarCategorias');
+
+    Route::post('/', "CategoriaAjax@store")->name('api.cadatroCategoria');
+    Route::delete('/{id}', 'CategoriaAjax@destroy')->name('api.deletarCategoria');
+    Route::get('/{id}', 'CategoriaAjax@show')->name('api.editarCategoria');
+    Route::put('/{id}', 'CategoriaAjax@update')->name('api.editarCategoria');
 
 
 });
 
 Route::group(['prefix' => 'subcategorias'], function () {
 
-    Route::post('/', "SubcategoriaController@store")->name('api.cadatroSubcategoria');
-    Route::delete('/{id}', 'SubcategoriaController@destroy')->name('api.deletarSubcategoria');
-    Route::get('/{id}', 'SubcategoriaController@show')->name('api.editarSubcategoria');
-    Route::put('/{id}', 'SubcategoriaController@update')->name('api.editarSubcategoria');
+    //Puxa as subcategorias cadastradas baseada na categoria
+    Route::get('/{categoria}', 'SubcategoriaAjax@index')->name('api.listarSubcategoria');
+
+    Route::post('/', "SubcategoriaAjax@store")->name('api.cadatroSubcategoria');
+    Route::delete('/{id}', 'SubcategoriaAjax@destroy')->name('api.deletarSubcategoria');
+    Route::get('/{id}', 'SubcategoriaAjax@show')->name('api.editarSubcategoria');
+    Route::put('/{id}', 'SubcategoriaAjax@update')->name('api.editarSubcategoria');
 
 
 });
