@@ -53,3 +53,7 @@ Route::group(['prefix' => 'subcategorias'], function () {
 
 });
 
+
+Route::resource('/pedidos', 'PedidoAjax');
+
+

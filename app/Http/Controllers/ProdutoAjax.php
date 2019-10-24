@@ -14,7 +14,9 @@ class ProdutoAjax extends Controller
      */
     public function index()
     {
+        $prod =  Produto::where('publicado',1)->get();
 
+        return json_encode($prod);
     }
 
     /**

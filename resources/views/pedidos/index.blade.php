@@ -47,13 +47,16 @@
                                             <td>{{ date('d/m/Y', strtotime($ped->data_pedido)) }}</td>
                                             <td>{{ $ped->status->status }}</td>
                                             <td>
-                                                <button class="btn btn-sm btn-primary" onclick="">
+                                                <button class="btn btn-sm btn-primary" onclick="editar({{$ped->id}})">
                                                     <i class="fas fa-edit"></i> Editar
                                                 </button>
-                                                <button class="btn btn-sm btn-danger" onclick="">
+                                                <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#modal-danger">
                                                     <i class="fas fa-trash"></i> Apagar
                                                 </button>
                                             </td>
+                                            <button type="button" class="btn btn-danger" >
+                                                Launch Danger Modal
+                                            </button>
                                         </tr>
                                     @endforeach
                                     </tbody>
@@ -115,6 +118,29 @@
         </div>
     </div>
 
+    <div class="modal fade show" id="modal-danger" style="display: block; padding-right: 17px;" aria-modal="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-danger">
+                <div class="modal-header">
+                    <h4 class="modal-title">Danger Modal</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="id">
+                    <p>One fine body…</p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-outline-light" onclick="apagar()">Save changes</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
 @stop
 
 @section('scriptPlus')
@@ -149,13 +175,79 @@
         }
 
         function carregarProduto() {
-            $.getJSON('{{ route('api.listaProduto') }}', function (data) {
+            $.getJSON('{{ route('produtos.index') }}', function (data) {
                 for (i = 0; i < data.length; i++) {
                     opcao = '<option value="' + data[i].id + '" >' + data[i].nome + '</option>';
 
                     $('#produto').append(opcao);
                 }
             })
+        }
+
+        function editar(id) {
+            tituloModal('Editação')
+            $.getJSON("http://{{$_SERVER['HTTP_HOST']}}/sitoque/api/pedidos/" + id + "/edit", function (data) {
+
+                $('#id').val(data.id)
+                $('#produto').val(data.produtos_id)
+                $('#quantidade').val(data.quantidade)
+
+                $('#formPedido').modal('show');
+            })
+
+        }
+
+        function editarPedido() {
+            let data = new Date()
+            var datahoje = (data.getMonth() + 1) + '-' + data.getDate() + '-' + data.getFullYear()
+
+            var ped = {
+                id: $('#id').val(),
+                produto_id: $('#produto').val(),
+                quantidade: $('#quantidade').val(),
+                data_pedido: datahoje,
+                usuario_id: '{{ $user }}',
+            };
+
+            $.ajax({
+                data: ped,
+                url: "http://{{$_SERVER['HTTP_HOST']}}/sitoque/api/pedidos/" + ped.id,
+                type: "PUT",
+                context: this,
+                success: function (data) {
+                    ped = JSON.parse(data);
+
+                    linhas = $('#tabela>tbody>tr');
+                    e = linhas.filter(function (i, elemento) {
+                        return (elemento.cells[0].textContent == ped.id);
+                    });
+                    try {
+                        if (e) {
+                            e[0].cells[0].textContent = ped.id;
+                            e[0].cells[1].textContent = $('#produto option:selected').text();
+                            e[0].cells[2].textContent = datahoje;
+                            e[0].cells[3].textContent = 'Solicitado';
+                        }
+
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Pedido alterado com sucesso!',
+                            backdrop: ` rgba(0,0,123,0.4)
+                                url("https://media.giphy.com/media/7lsw8RenVcjCM/giphy.gif")
+                                center right
+                                no-repeat`
+                        })
+                    } catch (error) {
+                        console.error("Error: " + error)
+                        console.log(e.cells)
+                    }
+
+
+                },
+                error: function (data) {
+                    console.log('Error:', data);
+                }
+            });
         }
 
         function cadastroPedido() {
@@ -166,13 +258,13 @@
             var ped = {
                 produto_id: $('#produto').val(),
                 quantidade: $('#quantidade').val(),
-                data_pedido: (data.getMonth()+1)+'-'+data.getDate()+'-'+data.getFullYear(),
+                data_pedido: (data.getMonth() + 1) + '-' + data.getDate() + '-' + data.getFullYear(),
                 usuario_id: '{{ $user }}',
             };
 
             $.ajax({
                 data: ped,
-                url: "http://{{$_SERVER['HTTP_HOST']}}/sitoque/api/pedidos",
+                url: "{{route('pedidos.store')}}",
                 type: "POST",
                 dataType: 'json',
                 success: function (data) {
@@ -180,18 +272,18 @@
 
                     let dataNova = pedido.data_pedido.split('-')
 
-                    dataNova = dataNova[2]+'/'+dataNova[1]+'/'+dataNova[0]
+                    dataNova = dataNova[2] + '/' + dataNova[1] + '/' + dataNova[0]
 
                     let linha = "<tr>" +
                         "<td>" + pedido.id + "</td>" +
                         "<td>" + $('#produto option:selected').text() + "</td>" +
-                        "<td>" + dataNova  + "</td>" +
+                        "<td>" + dataNova + "</td>" +
                         "<td> Solicitado </td>" +
                         "<td>" +
-                        "<button class='btn btn-sm btn-primary' onclick='editar("+ pedido.id +")'>" +
+                        "<button class='btn btn-sm btn-primary' onclick='editar(" + pedido.id + ")'>" +
                         "<i class='fas fa-edit'></i> Editar" +
                         "</button>" +
-                        "<button class='btn btn-sm btn-danger' onclick='apagar("+ pedido.id +")'>" +
+                        "<button class='btn btn-sm btn-danger' onclick='apagar(" + pedido.id + ")'>" +
                         "<i class='fas fa-trash'></i> Apagar" +
                         "</button>" +
                         "</td>" +
@@ -201,6 +293,8 @@
                         pai.remove();
                     }
                     $('#tabela>tbody').append(linha)
+
+                    $('#formPedido').modal('hide')
 
                     Swal.fire({
                         type: 'success',
@@ -220,15 +314,47 @@
 
         }
 
+        function apagar(id){
+            $.ajax({
+                type: 'DELETE',
+                url: "http://{{$_SERVER['HTTP_HOST']}}/sitoque/api/produtos/" + id,
+                context: this,
+                success: function () {
+                    console.log('Apagado com sucesso');
+                    let linhas = $('#tabela>tbody>tr');
+
+                    e = linhas.filter(function (i, elemento) {
+                        return elemento.cells[0].textContent == id;
+                    });
+                    if (e)
+                        e.remove();
+
+                    Swal.fire({
+                        type: 'success',
+                        title: 'Produto apagado com sucesso!',
+                        backdrop: ` rgba(0,0,123,0.4)
+                                url("https://media.giphy.com/media/7lsw8RenVcjCM/giphy.gif")
+                                center right
+                                no-repeat`
+                    })
+                },
+                error: function (error) {
+                    console.error(error)
+                }
+
+            })
+        }
+
+
         $('#frmPedido').submit(function (event) {
             event.preventDefault()
             if ($('#id').val() != '') {
-                editarPpedido()
+                editarPedido()
             } else {
                 cadastroPedido()
             }
 
-            $("#formProduto").modal('hide')
+            $("#formPedido").modal('hide')
 
         })
 

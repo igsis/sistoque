@@ -32,14 +32,34 @@ class PedidoAjax extends Controller
 
     }
 
-    public function show()
+    public function edit($id)
     {
 
+        $ped = Pedido::find($id);
+
+        if (isset($ped)){
+            return json_encode($ped);
+        }
+
+        return response ('Produto não encontrado', 404);
     }
 
-    public function update()
+    public function update(Request $request, $id)
     {
+        $ped = Pedido::find($id);
 
+        if(isset($ped)){
+
+            $ped->produtos_id = $request->input('produto_id');
+            $ped->usuarios_id = $request->input('usuario_id');
+            $ped->quantidade = $request->input('quantidade');
+            $ped->status_pedidos_id = 2;
+
+
+            $ped->save();
+
+            return json_encode($ped);
+        }
     }
 
     public function destroy()
