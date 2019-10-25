@@ -52,7 +52,7 @@
                                                 <button class="btn btn-sm btn-primary" onclick="editar({{ $prod->id }})">
                                                     <i class="fas fa-edit"></i> Editar
                                                 </button>
-                                                <button class="btn btn-sm btn-danger" onclick="apagar({{ $prod->id }})">
+                                                <button class="btn btn-sm btn-danger" onclick="modalApagar({{ $prod->id }})">
                                                     <i class="fas fa-trash"></i> Apagar
                                                 </button>
                                             </td>
@@ -137,6 +137,30 @@
                 </form>
             </div>
         </div>
+    </div>
+
+    <div class="modal fade" id="modal-danger" tabindex="-1" role="dialog" aria-labelledby="ModalFormularioProduto"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-danger">
+                <div class="modal-header">
+                    <h4 class="modal-title">Apagar Produto</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="idApagar">
+                    <p>Você deseja mesmo apagar este produto?</p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-light" data-dismiss="modal">Não</button>
+                    <button type="button" class="btn btn-outline-light" onclick="apagar()">Sim</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
     </div>
 @stop
 
@@ -258,7 +282,7 @@
                         "<button class='btn btn-sm btn-primary' onclick='editar("+ produto.id +")'>" +
                         "<i class='fas fa-edit'></i> Editar" +
                         "</button>" +
-                        "<button class='btn btn-sm btn-danger' onclick='apagar("+ produto.id +")'>" +
+                        "<button class='btn btn-sm btn-danger' onclick='modalApagar("+ produto.id +")'>" +
                         "<i class='fas fa-trash'></i> Apagar" +
                         "</button>" +
                         "</td>" +
@@ -268,7 +292,7 @@
                         pai.remove();
                     }
                     $('#tabela>tbody').append(linha)
-
+                    $('#modal-danger').modal('hide')
                     Swal.fire({
                         type: 'success',
                         title: 'Produto adicionado com sucesso!',
@@ -338,7 +362,13 @@
             });
         }
 
-        function apagar(id){
+        function modalApagar(id) {
+            $('#idApagar').val(id)
+            $('#modal-danger').modal('show')
+        }
+
+        function apagar(){
+            let id = $('#idApagar').val()
             $.ajax({
                 type: 'DELETE',
                 url: "http://{{$_SERVER['HTTP_HOST']}}/sitoque/api/produtos/" + id,

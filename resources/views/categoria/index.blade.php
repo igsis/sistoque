@@ -102,6 +102,30 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modal-danger" tabindex="-1" role="dialog" aria-labelledby="ModalFormularioProduto"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-danger">
+                <div class="modal-header">
+                    <h4 class="modal-title">Apagar Categoria</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="idApagar">
+                    <p>Você deseja mesmo apagar esta categoria?</p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-light" data-dismiss="modal">Não</button>
+                    <button type="button" class="btn btn-outline-light" onclick="apagar()">Sim</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
 @stop
 
 @section('scriptPlus')
@@ -185,7 +209,13 @@
 
         }
 
-        function apagar(id){
+        function modalApagar(id) {
+            $('#idApagar').val(id)
+            $('#modal-danger').modal('show')
+        }
+
+        function apagar(){
+            let id = $('#idApagar').val()
             $.ajax({
                 type: 'DELETE',
                 url: "http://{{$_SERVER['HTTP_HOST']}}/sitoque/api/categorias/" + id,
@@ -199,6 +229,8 @@
                     });
                     if (e)
                         e.remove();
+
+                    $('#modal-danger').modal('hide')
                 },
                 error: function (error) {
                     console.error(error)

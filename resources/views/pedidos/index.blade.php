@@ -50,13 +50,10 @@
                                                 <button class="btn btn-sm btn-primary" onclick="editar({{$ped->id}})">
                                                     <i class="fas fa-edit"></i> Editar
                                                 </button>
-                                                <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#modal-danger">
+                                                <button class="btn btn-sm btn-danger" onclick="modalApagar({{ $ped->id }})">
                                                     <i class="fas fa-trash"></i> Apagar
                                                 </button>
                                             </td>
-                                            <button type="button" class="btn btn-danger" >
-                                                Launch Danger Modal
-                                            </button>
                                         </tr>
                                     @endforeach
                                     </tbody>
@@ -118,22 +115,23 @@
         </div>
     </div>
 
-    <div class="modal fade show" id="modal-danger" style="display: block; padding-right: 17px;" aria-modal="true">
+    <div class="modal fade" id="modal-danger" tabindex="-1" role="dialog" aria-labelledby="ModalFormularioProduto"
+         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content bg-danger">
                 <div class="modal-header">
-                    <h4 class="modal-title">Danger Modal</h4>
+                    <h4 class="modal-title">Cancelar Pedido</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" id="id">
-                    <p>One fine body…</p>
+                    <input type="hidden" id="idApagar">
+                    <p>Você deseja mesmo cancelar este pedido?</p>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-outline-light" onclick="apagar()">Save changes</button>
+                    <button type="button" class="btn btn-outline-light" data-dismiss="modal">Não</button>
+                    <button type="button" class="btn btn-outline-light" onclick="apagar()">Sim</button>
                 </div>
             </div>
             <!-- /.modal-content -->
@@ -156,6 +154,11 @@
                 'X-CSRF-TOKEN': "{{csrf_token()}}"
             }
         });
+
+        function modalApagar(id) {
+            $('#idApagar').val(id)
+            $('#modal-danger').modal('show')
+        }
 
         function tituloModal(tipo) {
             $('#formPedido').find('.modal-title').text(tipo + ' de Pedido')
@@ -314,10 +317,11 @@
 
         }
 
-        function apagar(id){
+        function apagar(){
+            var id = $('#idApagar').val()
             $.ajax({
                 type: 'DELETE',
-                url: "http://{{$_SERVER['HTTP_HOST']}}/sitoque/api/produtos/" + id,
+                url: "http://{{$_SERVER['HTTP_HOST']}}/sitoque/api/pedidos/" + id,
                 context: this,
                 success: function () {
                     console.log('Apagado com sucesso');
@@ -328,6 +332,8 @@
                     });
                     if (e)
                         e.remove();
+
+                    $('#modal-danger').modal('hide')
 
                     Swal.fire({
                         type: 'success',

@@ -62,8 +62,18 @@ class PedidoAjax extends Controller
         }
     }
 
-    public function destroy()
+    public function destroy($id)
     {
+        $ped = Pedido::find($id);
+
+        if (isset($ped)){
+            $ped->publicado = 0;
+            $ped->save();
+
+            return response('Apagado com sucesso',200);
+        }
+
+        return response('Pedido não encontrado', 404);
 
     }
 }
