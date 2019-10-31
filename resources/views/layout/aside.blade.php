@@ -15,39 +15,39 @@
                 <!-- Add icons to the links using the .nav-icon class
                      with font-awesome or any other icon font library -->
                 <li class="nav-item">
-                    <a href="{{ route('home') }}" class="nav-link">
+                    <a href="{{ route('home') }}" class="nav-link {{ (request()->is('/')) ? 'active' : '' }}">
                         <i class="nav-icon fa fa-home"></i>
                         <p>Início</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('pedidos') }}" class="nav-link">
+                    <a href="{{ route('pedidos') }}" class="nav-link  {{ (request()->is('pedidos')) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-sticky-note"></i>
                         <p>Pedidos</p>
                     </a>
                 </li>
                 <li class="nav-header">Gerencial</li>
                 <li class="nav-item">
-                    <a href="{{ route('produtos') }}" class="nav-link">
+                    <a href="{{ route('produtos') }}" class="nav-link {{ (request()->is('produtos')) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-dolly"></i>
                         <p>Produtos</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('categorias') }}" class="nav-link">
+                    <a href="{{ route('categorias') }}" class="nav-link {{ (request()->is('categorias')) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-cube"></i>
                         <p>Categoria</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('subcategoria') }}" class="nav-link">
+                    <a href="{{ route('subcategoria') }}" class="nav-link {{ (request()->is('subcategorias')) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-cubes"></i>
                         <p>Subcategoria</p>
                     </a>
                 </li>
                 <li class="nav-header">Conta</li>
                 <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link">
+                    <a href="#" class="nav-link" {{ (request()->is('minhaconta/*')) ? 'active' : '' }}>
                         <i class="nav-icon fas fa-user"></i>
                         <p>
                             Minha conta
