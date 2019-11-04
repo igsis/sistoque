@@ -8,7 +8,6 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
-
         <!-- Sidebar Menu -->
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
@@ -28,23 +27,28 @@
                 </li>
                 <li class="nav-header">Gerencial</li>
                 <li class="nav-item">
-                    <a href="{{ route('produtos') }}" class="nav-link {{ (request()->is('produtos')) ? 'active' : '' }}">
+                    <a href="{{ route('produtos') }}"
+                       class="nav-link {{ (request()->is('produtos')) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-dolly"></i>
                         <p>Produtos</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('categorias') }}" class="nav-link {{ (request()->is('categorias')) ? 'active' : '' }}">
+                    <a href="{{ route('categorias') }}"
+                       class="nav-link {{ (request()->is('categorias')) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-cube"></i>
                         <p>Categoria</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="{{ route('subcategoria') }}" class="nav-link {{ (request()->is('subcategorias')) ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-cubes"></i>
-                        <p>Subcategoria</p>
-                    </a>
-                </li>
+                @if (session()->get('nv') != 1)
+                    <li class="nav-item">
+                        <a href="{{ route('subcategoria') }}"
+                           class="nav-link {{ (request()->is('subcategorias')) ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-cubes"></i>
+                            <p>Subcategoria</p>
+                        </a>
+                    </li>
+                @endif
                 <li class="nav-header">Conta</li>
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link" {{ (request()->is('minhaconta/*')) ? 'active' : '' }}>

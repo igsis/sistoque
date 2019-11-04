@@ -13,10 +13,7 @@
 
 
 //Rota da home
-Route::get('/', function () {
-    return view('index');
-})->middleware('auth')
-->name('home');
+Route::get('/', 'HomeController@index')->name('home');
 
 //~~ Rota de produtos ~~
 Route::get('/produtos', 'ProdutoController@index')->name('produtos');

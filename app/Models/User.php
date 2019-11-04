@@ -20,6 +20,7 @@ class User extends Authenticatable
         'password',
         'updated_at',
         'unidades_id',
+        'niveis_acessos_id',
         'publicado'
     ];
 
@@ -31,4 +32,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function nivelAcesso(){
+       return $this->belongsTo(NivelAcesso::class,'niveis_acessos_id','id');
+    }
 }

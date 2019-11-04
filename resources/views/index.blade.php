@@ -8,6 +8,7 @@
                 <div class="row mb-2">
                     <div class="col-sm-6 offset-5">
                         <h1 class="m-0 text-dark">Bem-vindo ao SITOQUE</h1>
+                        <p>{{ session()->exists('users') }}</p>
                     </div><!-- /.col -->
                 </div><!-- /.row -->
             </div><!-- /.container-fluid -->
