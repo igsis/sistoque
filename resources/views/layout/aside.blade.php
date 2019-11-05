@@ -28,7 +28,7 @@
                             <p>Pedidos</p>
                         </a>
                     </li>
-                @if (session()->get('nv' == 2))
+                @if (session()->get('nv') == 2)
                     <li class="nav-item">
                         <a href="{{ route('pedidoSolicitado') }}"
                            class="nav-link  {{ (request()->is('pedidos.pedidosSolicitados')) ? 'active' : '' }}">
