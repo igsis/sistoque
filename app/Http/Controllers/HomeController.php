@@ -12,8 +12,16 @@ class HomeController extends Controller
         $this->middleware('nivelAcesso');
     }
 
-    public function index(){
+    public function index()
+    {
         return view('index');
 
+    }
+
+    public function logout()
+    {
+        Auth::logout();
+        Session::flush();
+        return redirect("/login");
     }
 }

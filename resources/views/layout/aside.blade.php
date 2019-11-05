@@ -19,28 +19,41 @@
                         <p>Início</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="{{ route('pedidos') }}" class="nav-link  {{ (request()->is('pedidos')) ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-sticky-note"></i>
-                        <p>Pedidos</p>
-                    </a>
-                </li>
-                <li class="nav-header">Gerencial</li>
-                <li class="nav-item">
-                    <a href="{{ route('produtos') }}"
-                       class="nav-link {{ (request()->is('produtos')) ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-dolly"></i>
-                        <p>Produtos</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('categorias') }}"
-                       class="nav-link {{ (request()->is('categorias')) ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-cube"></i>
-                        <p>Categoria</p>
-                    </a>
-                </li>
-                @if (session()->get('nv') != 1)
+                @if (session()->get('nv') == 3 || session()->get('nv') == 2)
+                    <li class="nav-header">Pedidos</li>
+                    <li class="nav-item">
+                        <a href="{{ route('pedidos') }}"
+                           class="nav-link  {{ (request()->is('pedidos.index')) ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-clipboard-list"></i>
+                            <p>Pedidos</p>
+                        </a>
+                    </li>
+                @if (session()->get('nv' == 2))
+                    <li class="nav-item">
+                        <a href="{{ route('pedidoSolicitado') }}"
+                           class="nav-link  {{ (request()->is('pedidos.pedidosSolicitados')) ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-layer-group"></i>
+                            <p>Pedidos Solicitados</p>
+                        </a>
+                    </li>
+                @endif
+                @endif
+                @if (session()->get('nv') == 2)
+                    <li class="nav-header">Gerencial</li>
+                    <li class="nav-item">
+                        <a href="{{ route('produtos') }}"
+                           class="nav-link {{ (request()->is('produtos')) ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-dolly"></i>
+                            <p>Produtos</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('categorias') }}"
+                           class="nav-link {{ (request()->is('categorias')) ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-cube"></i>
+                            <p>Categoria</p>
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <a href="{{ route('subcategoria') }}"
                            class="nav-link {{ (request()->is('subcategorias')) ? 'active' : '' }}">

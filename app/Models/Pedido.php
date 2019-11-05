@@ -19,11 +19,18 @@ class Pedido extends Model
         'publicado',
     ];
 
-    public function status(){
-        return $this->belongsTo(Status::class,'status_pedidos_id',  'id');
+    public function status()
+    {
+        return $this->belongsTo(Status::class, 'status_pedidos_id', 'id');
     }
 
-    public function produto(){
-        return $this->belongsTo(Produto::class,'produtos_id','id');
+    public function produto()
+    {
+        return $this->belongsTo(Produto::class, 'produtos_id', 'id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class,'usuarios_id','id');
     }
 }

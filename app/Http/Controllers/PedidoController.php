@@ -14,15 +14,22 @@ class PedidoController extends Controller
         $this->middleware('auth');
     }
 
-    public function index(){
-        $peds = Pedido::where('publicado',1)->get();
+    public function index()
+    {
+        $peds = Pedido::where('publicado', 1)->get();
 
-        $user =  Auth::id();
+        $user = Auth::id();
 
-        return view('pedidos.index',compact('peds','user'));
+        return view('pedidos.index', compact('peds', 'user'));
     }
 
+    public function pedidoSolicitado()
+    {
+        $peds = Pedido::where('status_pedidos_id',2)->get();
 
+        return view('pedidos.pedidosSolicitados',compact('peds'));
+
+    }
 
 
 }

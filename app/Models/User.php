@@ -33,7 +33,18 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    public function nivelAcesso(){
-       return $this->belongsTo(NivelAcesso::class,'niveis_acessos_id','id');
+    public function nivelAcesso()
+    {
+        return $this->belongsTo(NivelAcesso::class, 'niveis_acessos_id', 'id');
+    }
+
+    public function pedido()
+    {
+        return $this->hasMany(Pedido::class, 'usuarios_id', 'id');
+    }
+
+    public function unidade()
+    {
+        return $this->belongsTo(Unidade::class,'unidades_id','id');
     }
 }

@@ -31,13 +31,12 @@ Route::get('/subcategorias', 'SubcategoriaController@index')->name('subcategoria
 Route::get('/pedidos', 'PedidoController@index')->name('pedidos');
 //Fim Pedidos
 
+//~~ Rota de Pedidos solicitados ~~
+Route::get('/pedidosSolicitados','PedidoController@pedidoSolicitado')->name('pedidoSolicitado');
+//Fim Pedidos solicitados
 //~~ Rotas de autenticação ~~
 Auth::routes();
 
 //Logout
-Route::get('/logout', function (){
-    Auth::logout();
-    Session::flush();
-    return redirect("/login");
-})->name('logout');
+Route::get('/logout', 'HomeController@logout')->name('logout');
 //Fim autenticação
