@@ -19,8 +19,8 @@
                         <p>Início</p>
                     </a>
                 </li>
+                <li class="nav-header">Pedidos</li>
                 @if (session()->get('nv') == 3 || session()->get('nv') == 2)
-                    <li class="nav-header">Pedidos</li>
                     <li class="nav-item">
                         <a href="{{ route('pedidos') }}"
                            class="nav-link  {{ (request()->is('pedidos.index')) ? 'active' : '' }}">
@@ -28,15 +28,24 @@
                             <p>Pedidos</p>
                         </a>
                     </li>
-                @if (session()->get('nv') == 2)
+                    @if (session()->get('nv') == 2)
+                        <li class="nav-item">
+                            <a href="{{ route('pedidoSolicitado') }}"
+                               class="nav-link  {{ (request()->is('pedidos.pedidosSolicitados')) ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-layer-group"></i>
+                                <p>Pedidos Solicitados</p>
+                            </a>
+                        </li>
+                    @endif
+                @endif
+                @if (session()->get('nv') == 2 || session()->get('nv') == 1)
                     <li class="nav-item">
                         <a href="{{ route('pedidoSolicitado') }}"
                            class="nav-link  {{ (request()->is('pedidos.pedidosSolicitados')) ? 'active' : '' }}">
                             <i class="nav-icon fas fa-layer-group"></i>
-                            <p>Pedidos Solicitados</p>
+                            <p>Pedidos Aprovados</p>
                         </a>
                     </li>
-                @endif
                 @endif
                 @if (session()->get('nv') == 2)
                     <li class="nav-header">Gerencial</li>

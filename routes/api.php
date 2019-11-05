@@ -53,6 +53,27 @@ Route::group(['prefix' => 'subcategorias'], function () {
 
 });
 
+Route::get('/statusPedido', function () {
+    $status = \App\Models\Status::all();
+
+    return json_encode($status);
+})->name('status');
+
+Route::put('/statusPedidos', function (Request $request, $id) {
+
+    $ped = \App\Models\Pedido::find($id);
+
+    if (isset($ped)){
+        $ped->status_pedidos_id = $request->stat;
+
+        $ped->save();
+
+        return response("Apagado com sucesso");
+    }
+
+    return response('Pedido não encontrado',404);
+});
+
 
 Route::resource('/pedidos', 'PedidoAjax');
 

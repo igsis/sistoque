@@ -28,9 +28,10 @@
                             <div class="card-body table-responsive">
                                 <table id="tabela" class="table table-bordered table-striped">
                                     <thead>
-                                    <tr>
+                                    <tr class="text-center">
                                         <th>ID</th>
                                         <th>Produto</th>
+                                        <th>Quantidade</th>
                                         <th>Data do pedido</th>
                                         <th>Solicitante</th>
                                         <th>Unidade</th>
@@ -42,11 +43,13 @@
                                         <tr>
                                             <td>{{ $ped->id }}</td>
                                             <td>{{ $ped->produto->nome }}</td>
+                                            <td>{{ $ped->quantidade }}</td>
                                             <td>{{ date('d/m/Y', strtotime($ped->data_pedido)) }}</td>
                                             <td>{{  $ped->user->nome }}</td>
                                             <td>{{ $ped->user->unidade->nome }}</td>
                                             <td>
-                                                <button class="btn btn-sm btn-info" onclick="editar({{$ped->id}})">
+                                                <button class="btn btn-sm btn-info"
+                                                        onclick="alterar('{{ $ped->id }}', {{$ped->status_pedidos_id}})">
                                                     <i class="fas fa-edit"></i> Alterar status
                                                 </button>
                                             </td>
@@ -54,9 +57,10 @@
                                     @endforeach
                                     </tbody>
                                     <tfoot>
-                                    <tr>
+                                    <tr class="text-center">
                                         <th>ID</th>
                                         <th>Produto</th>
+                                        <th>Quantidade</th>
                                         <th>Data do pedido</th>
                                         <th>Solicitante</th>
                                         <th>Unidade</th>
@@ -77,23 +81,23 @@
         <!-- /.content -->
     </div>
 
-    <div class="modal fade" id="modal-danger" tabindex="-1" role="dialog" aria-labelledby="ModalFormularioProduto"
+    <div class="modal fade" id="modal-status" tabindex="-1" role="dialog" aria-labelledby="ModalStatus"
          aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content bg-danger">
+            <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Cancelar Pedido</h4>
+                    <h4 class="modal-title">Alterar status do pedido</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" id="idApagar">
-                    <p>Você deseja mesmo cancelar este pedido?</p>
+                    <input type="hidden" id="idPedido">
+                    <select class="form-control" id="statusPed"></select>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-outline-light" data-dismiss="modal">Não</button>
-                    <button type="button" class="btn btn-outline-light" onclick="apagar()">Sim</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-success" onclick="mudarStatus()">Alterar</button>
                 </div>
             </div>
             <!-- /.modal-content -->
@@ -117,7 +121,75 @@
             }
         });
 
+
+        function alterar(id, status) {
+            $('#idPedido').val(id)
+            $('#statusPed').val(status)
+
+            $('#modal-status').modal('show');
+
+        }
+
+        function carregarStatus() {
+            $.getJSON('{{route('status')}}', function (data) {
+                for (i = 0; i < data.length; i++) {
+                    opc = "<option value=" + data[i].id + ">" + data[i].status + "</option>"
+                    $('#statusPed').append(opc)
+                }
+            })
+        }
+
+        function mudarStatus() {
+            let status = {
+                stat: $('#statusPed').val()
+            }
+
+            $.ajax({
+                data: status,
+                url: 'http://{{$_SERVER['HTTP_HOST']}}/sitoque/api/statusPedido/' + $('#idPedido').val(),
+                type: 'PUT',
+                context: this,
+                success: function () {
+                    if ($('#statusPed').val() != 2) {
+                        statu = JSON.parse(data);
+                        let linhas = $('#tabela>tbody>tr');
+
+                        e = linhas.filter(function (i, elemento) {
+                            return elemento.cells[0].textContent == $('#idPedido').val();
+                        });
+                        if (e)
+                            e.remove();
+                        $('#modal-status').modal('hide')
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Status do pedido alterado com sucesso',
+                            backdrop: ` rgba(0,0,123,0.4)
+                                url("https://media.giphy.com/media/7lsw8RenVcjCM/giphy.gif")
+                                center right
+                                no-repeat`
+                        })
+                    }
+                    else{
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Status do pedido alterado com sucesso!<br>Mas foi para Solicitado.',
+                            backdrop: ` rgba(0,0,123,0.4)
+                                url("https://media.giphy.com/media/7lsw8RenVcjCM/giphy.gif")
+                                center right
+                                no-repeat`
+                        })
+                    }
+                },
+                error: function (error) {
+                    console.error(error)
+                }
+
+            })
+        }
+
         $(function () {
+
+            carregarStatus()
 
             $('#tabela').DataTable({
                 "oLanguage": {
