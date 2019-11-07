@@ -93,18 +93,11 @@
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="idPedido">
-                    <div class="form-group">
-                        <label for="statusPed">Status:</label>
-                        <select class="form-control" id="statusPed"></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="observacao">Observação:</label>
-                        <input type="text" class="form-control" name="observacao" id="observacao">
-                    </div>
+                    <p>Este pedido foi entregue?</p>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
-                    <button type="button" class="btn btn-success" onclick="mudarStatus()">Alterar</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Não</button>
+                    <button type="button" class="btn btn-success" onclick="mudarStatus()">Sim</button>
                 </div>
             </div>
             <!-- /.modal-content -->
@@ -137,24 +130,11 @@
 
         }
 
-        function carregarStatus() {
-            $.getJSON('{{route('status')}}', function (data) {
-                for (i = 0; i < data.length; i++) {
-                    opc = "<option value=" + data[i].id + ">" + data[i].status + "</option>"
-                    $('#statusPed').append(opc)
-                }
-            })
-        }
-
         function mudarStatus() {
-            let status = {
-                stat: $('#statusPed').val(),
-                observacao: $('#observacao').val()
-            }
 
             $.ajax({
-                data: status,
-                url: 'http://{{$_SERVER['HTTP_HOST']}}/sitoque/api/statusPedido/' + $('#idPedido').val(),
+                data: '',
+                url: 'http://{{$_SERVER['HTTP_HOST']}}/sitoque/api/entregaPedido/' + $('#idPedido').val(),
                 type: 'PUT',
                 context: this,
                 success: function () {
@@ -176,15 +156,6 @@
                                 center right
                                 no-repeat`
                         })
-                    } else {
-                        Swal.fire({
-                            type: 'success',
-                            title: 'Status do pedido alterado com sucesso!<br>Mas foi para Solicitado.',
-                            backdrop: ` rgba(0,0,123,0.4)
-                                url("https://media.giphy.com/media/7lsw8RenVcjCM/giphy.gif")
-                                center right
-                                no-repeat`
-                        })
                     }
                 },
                 error: function (error) {
@@ -195,8 +166,6 @@
         }
 
         $(function () {
-
-            carregarStatus()
 
             $('#tabela').DataTable({
                 "oLanguage": {

@@ -65,13 +65,30 @@ Route::put('/statusPedidos', function (Request $request, $id) {
 
     if (isset($ped)){
         $ped->status_pedidos_id = $request->stat;
+        $ped->observacao = $request->observacao;
 
         $ped->save();
 
-        return response("Apagado com sucesso");
+        return response("Pedido aprovado com sucesso");
     }
 
     return response('Pedido não encontrado',404);
+});
+
+Route::put('/entregaPedido', function ($id){
+
+    $ped = \App\Models\Pedido::find($id);
+
+    if (isset($ped)){
+        $ped->status_pedidos_id = 4;
+
+        $ped->save();
+
+        return response("Status alterado com sucesso");
+    }
+
+    return response('Pedido não encontrado',404);
+
 });
 
 

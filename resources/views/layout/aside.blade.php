@@ -40,9 +40,9 @@
                 @endif
                 @if (session()->get('nv') == 2 || session()->get('nv') == 1)
                     <li class="nav-item">
-                        <a href="{{ route('pedidoSolicitado') }}"
-                           class="nav-link  {{ (request()->is('pedidos.pedidosSolicitados')) ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-layer-group"></i>
+                        <a href="{{ route('pedidoAprovado') }}"
+                           class="nav-link  {{ (request()->is('pedidos.pedidosAprovados')) ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-dolly"></i>
                             <p>Pedidos Aprovados</p>
                         </a>
                     </li>
@@ -52,7 +52,7 @@
                     <li class="nav-item">
                         <a href="{{ route('produtos') }}"
                            class="nav-link {{ (request()->is('produtos')) ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-dolly"></i>
+                            <i class="nav-icon fas fa-boxes"></i>
                             <p>Produtos</p>
                         </a>
                     </li>

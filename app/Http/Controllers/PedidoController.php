@@ -31,5 +31,12 @@ class PedidoController extends Controller
 
     }
 
+    public function pedidoAprovado()
+    {
+        $peds = Pedido::where('status_pedidos_id',1)->get();
+
+        return view('pedidos.pedidosAprovados',compact('peds'));
+
+    }
 
 }

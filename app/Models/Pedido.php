@@ -17,6 +17,7 @@ class Pedido extends Model
         'data_pedido',
         'status_pedidos_id',
         'publicado',
+        'observacao'
     ];
 
     public function status()

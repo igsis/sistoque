@@ -34,6 +34,11 @@ Route::get('/pedidos', 'PedidoController@index')->name('pedidos');
 //~~ Rota de Pedidos solicitados ~~
 Route::get('/pedidosSolicitados','PedidoController@pedidoSolicitado')->name('pedidoSolicitado');
 //Fim Pedidos solicitados
+
+//~~ Rota de Pedidos solicitados ~~
+Route::get('/pedidosAprovadas','PedidoController@pedidoAprovado')->name('pedidoAprovado');
+//Fim Pedidos solicitados
+
 //~~ Rotas de autenticação ~~
 Auth::routes();
 
