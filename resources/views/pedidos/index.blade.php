@@ -47,10 +47,10 @@
                                             <td>{{ date('d/m/Y', strtotime($ped->data_pedido)) }}</td>
                                             <td>{{ $ped->status->status }}</td>
                                             <td>
-                                                <button class="btn btn-sm btn-primary" onclick="editar({{$ped->id}})">
+                                                <button class="btn btn-sm btn-primary" {{$ped->status_pedidos_id != 2 ? 'disabled' : ''}} onclick="editar({{$ped->id}})">
                                                     <i class="fas fa-edit"></i> Editar
                                                 </button>
-                                                <button class="btn btn-sm btn-danger" onclick="modalApagar({{ $ped->id }})">
+                                                <button class="btn btn-sm btn-danger" {{$ped->status_pedidos_id != 2 ? 'disabled' : ''}} onclick="modalApagar({{ $ped->id }})">
                                                     <i class="fas fa-trash"></i> Apagar
                                                 </button>
                                             </td>
